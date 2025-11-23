@@ -1,0 +1,38 @@
+# Données volumineuses
+data/*.ttl
+data/*.ttl.bz2
+data/*.parquet
+
+# Logs d'exécution
+results/*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# GCP
+.gcloud/
+*.json
+!requirements.txt
+
+# Résultats temporaires
+results/rdd_*
+results/df_*
+results/*_results/
