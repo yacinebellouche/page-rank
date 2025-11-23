@@ -3,8 +3,8 @@
 ## ⚡ 30 Seconds Setup
 
 ```bash
-# 1. Download data (once, ~5 min)
-cd data && bash download_data.sh && cd ..
+# 1. Download data (once, ~15 min) - ⭐ Use optimized version
+cd data && bash download_simple.sh && cd ..
 
 # 2. Run ONE test (choose based on assignment)
 cd scripts
@@ -240,7 +240,7 @@ python3 -m pip install matplotlib pandas numpy
 - [ ] Google Cloud SDK installed
 - [ ] Authenticated to GCP (`gcloud auth login`)
 - [ ] PROJECT_ID configured
-- [ ] Data downloaded (`bash data/download_data.sh`)
+- [ ] Data downloaded (`bash data/download_simple.sh`)
 - [ ] Budget alert configured in GCP Console
 - [ ] Scripts executable (`chmod +x` if needed)
 

@@ -67,10 +67,12 @@ bash compile_results.sh
    - Crée le bucket GCS
    - Configure l'environnement
 
-2. **data/download_data.sh** - Données Wikipedia
-   - Télécharge 1.8 GB
-   - Crée échantillon 10%
-   - Upload vers GCS
+2. **data/download_simple.sh** - Données Wikipedia (optimisé)
+   - Télécharge 1.8 GB compressé (.bz2)
+   - Upload direct vers GCS (pas de décompression locale)
+   - Crée échantillon 10% compressé (180 MB)
+   - PySpark décompresse automatiquement
+   - Économise 10 GB d'espace Cloud Shell
 
 3. **scripts/test_config_*workers.sh** - Tests automatisés
    - Crée cluster avec machines préemptibles (80% économie)
@@ -180,7 +182,7 @@ bash compile_results.sh
    ```bash
    # Chercher et remplacer dans:
    - setup_gcp.sh
-   - data/download_data.sh
+   - data/download_simple.sh
    - scripts/test_config_2workers.sh
    - scripts/test_config_4workers.sh
    - scripts/test_config_6workers.sh
@@ -206,10 +208,10 @@ bash compile_results.sh
    bash setup_gcp.sh
    ```
 
-2. **Télécharger données** (30-60 min)
+2. **Télécharger données** (15-20 min)
    ```bash
    cd data
-   bash download_data.sh
+   bash download_simple.sh  # ⭐ Version optimisée (.bz2)
    cd ..
    ```
 
@@ -470,7 +472,7 @@ git status
 ### Q4: Où modifier PROJECT_ID?
 **R:** Dans 7 fichiers (ligne 4 de chaque):
 1. setup_gcp.sh
-2. data/download_data.sh
+2. data/download_simple.sh
 3. scripts/test_config_2workers.sh
 4. scripts/test_config_4workers.sh
 5. scripts/test_config_6workers.sh

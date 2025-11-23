@@ -9,7 +9,7 @@
 ### 1. Modifier PROJECT_ID
 
 - [ ] `setup_gcp.sh` - Ligne 4
-- [ ] `data/download_data.sh` - Ligne 4
+- [ ] `data/download_simple.sh` - Ligne 4
 - [ ] `scripts/test_config_2workers.sh` - Ligne 4
 - [ ] `scripts/test_config_4workers.sh` - Ligne 4
 - [ ] `scripts/test_config_6workers.sh` - Ligne 4

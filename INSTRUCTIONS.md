@@ -116,7 +116,7 @@ gcloud config list
 ```bash
 # Fichiers à modifier:
 1. setup_gcp.sh
-2. data/download_data.sh  
+2. data/download_simple.sh  
 3. scripts/test_config_2workers.sh (ou 4/6 workers)
 4. scripts/compile_results.sh
 5. scripts/cleanup.sh# Dans chaque fichier, remplacer:
@@ -164,14 +164,14 @@ Ce script va:
 cd data
 
 # Rendre le script exécutable
-chmod +x download_data.sh
+chmod +x download_simple.sh
 
 # Exécuter le téléchargement
-bash download_data.sh
+bash download_simple.sh
 ```
 
-**⚠️ Attention:**
-- Le téléchargement fait ~1.8 GB
+**💡 Avantages:**
+- Télécharge 1.8 GB compressé (.bz2)
 - Durée: 5-30 minutes selon votre connexion
 - Le script crée automatiquement un échantillon de 10%
 

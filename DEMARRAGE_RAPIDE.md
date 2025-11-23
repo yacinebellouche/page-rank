@@ -20,9 +20,9 @@ Chaque membre de l'équipe peut lancer **un script unique** qui fait TOUT automa
 # S'authentifier à Google Cloud
 gcloud auth login
 
-# Télécharger les données (une fois)
+# Télécharger les données (une fois) - ⭐ Version optimisée
 cd data
-bash download_data.sh
+bash download_simple.sh
 cd ..
 
 # Exécuter le setup
@@ -98,7 +98,7 @@ Cela génère :
 ├──────────────────────────────────────────────────────────────┤
 │  Chaque membre:                                              │
 │  1. gcloud auth login                                        │
-│  2. cd data && bash download_data.sh                         │
+│  2. cd data && bash download_simple.sh                       │
 └──────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -207,7 +207,7 @@ page-rank/
 ├── .gitignore                  # Fichiers à ignorer
 │
 ├── data/
-│   └── download_data.sh        # Téléchargement données Wikipedia
+│   └── download_simple.sh      # ⭐ Téléchargement optimisé (.bz2)
 │
 ├── src/
 │   ├── utils.py                # Fonctions utilitaires

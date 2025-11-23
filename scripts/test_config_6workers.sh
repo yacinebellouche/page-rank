@@ -96,11 +96,12 @@ echo ""
 # ============================================================================
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${GREEN}📊 ÉTAPE 3/6: Tests avec 10% des données${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
-DATA_10PCT="gs://$BUCKET_NAME/data/wikilinks_10percent.ttl"
-DATA_FULL="gs://$BUCKET_NAME/data/wikilinks_full.ttl"
+# Fichiers .bz2 - PySpark décompresse automatiquement
+DATA_10PCT="gs://$BUCKET_NAME/data/wikilinks_10percent.ttl.bz2"
+DATA_FULL="gs://$BUCKET_NAME/data/wikilinks_full.ttl.bz2"
 
 # Test RDD - 10%
 echo -e "${RED}🔴 PageRank RDD (10%)...${NC}"

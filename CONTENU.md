@@ -23,7 +23,7 @@ page-rank/
 │   └── setup_gcp.sh                 🔧 Configuration Google Cloud
 │
 ├── 📊 data/
-│   └── download_data.sh             📥 Téléchargement Wikipedia
+│   └── download_simple.sh           ⭐ Téléchargement optimisé (.bz2)
 │
 ├── 💻 src/
 │   ├── utils.py                     🛠️ Fonctions utilitaires
@@ -164,7 +164,7 @@ google-cloud-dataproc==5.4.3
 
 ## 📊 Données (1 dossier, 1 script)
 
-### data/download_data.sh 📥
+### data/download_simple.sh 📥 ⭐ RECOMMANDÉ
 **Ce qu'il fait:**
 1. Télécharge wikilinks (1.8 GB)
 2. Décompresse
@@ -350,7 +350,7 @@ bash cleanup.sh
 1. Lire `DEMARRAGE_RAPIDE.md`
 2. Modifier `PROJECT_ID` dans les 7 scripts
 3. Exécuter `setup_gcp.sh`
-4. Exécuter `data/download_data.sh`
+4. Exécuter `data/download_simple.sh`
 
 ### Phase 2: Exécution (40-60 min par config, EN PARALLÈLE)
 1. Consulter `CHECKLIST.md`
@@ -389,7 +389,7 @@ bash cleanup.sh
 
 **⚠️ CRITIQUE:**
 1. `setup_gcp.sh` - Ligne 4 - `PROJECT_ID`
-2. `data/download_data.sh` - Ligne 4 - `PROJECT_ID`
+2. `data/download_simple.sh` - Ligne 4 - `PROJECT_ID`
 3. `scripts/test_config_2workers.sh` - Ligne 4 - `PROJECT_ID`
 4. `scripts/test_config_4workers.sh` - Ligne 4 - `PROJECT_ID`
 5. `scripts/test_config_6workers.sh` - Ligne 4 - `PROJECT_ID`

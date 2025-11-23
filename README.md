@@ -138,7 +138,7 @@ Cela génère :
 
 **IMPORTANT:** Avant toute exécution, modifiez la variable `PROJECT_ID` dans TOUS les scripts :
 - `setup_gcp.sh`
-- `data/download_data.sh`
+- `data/download_simple.sh`
 - `scripts/test_config_2workers.sh`
 - `scripts/test_config_4workers.sh`
 - `scripts/test_config_6workers.sh`
@@ -169,11 +169,11 @@ bash setup_gcp.sh
 
 ```bash
 cd data
-bash download_data.sh
+bash download_simple.sh  # ⭐ Version optimisée (.bz2)
 cd ..
 ```
 
-⚠️ **Attention:** Le téléchargement complet fait ~1.8 GB. Le script crée automatiquement un échantillon de 10% pour les tests.
+⚠️ **Note:** Les fichiers .bz2 sont décompressés automatiquement par PySpark.
 
 #### Étape 3: Exécuter les tests (EN PARALLÈLE)
 
@@ -288,7 +288,7 @@ page-rank/
 ├── .gitignore                         # Fichiers à ignorer
 │
 ├── data/
-│   └── download_data.sh               # Téléchargement données Wikipedia
+│   └── download_simple.sh             # ⭐ Téléchargement optimisé (.bz2)
 │
 ├── src/
 │   ├── utils.py                       # Fonctions utilitaires

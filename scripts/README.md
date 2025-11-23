@@ -333,7 +333,7 @@ gsutil du -sh gs://PROJECT_ID-pagerank-data/
 - [ ] Google Cloud SDK installé (`gcloud --version`)
 - [ ] Authentifié à GCP (`gcloud auth list`)
 - [ ] PROJECT_ID correctement défini
-- [ ] Données téléchargées (`data/download_data.sh` exécuté)
+- [ ] Données téléchargées (`data/download_simple.sh` exécuté)
 - [ ] Quota vCPU vérifié (< 32 vCPU disponibles)
 - [ ] Alerte budget configurée dans GCP Console
 - [ ] Script exécutable (`chmod +x` si nécessaire)

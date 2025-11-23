@@ -276,7 +276,7 @@ bash compile_results.sh
 
 ### Exécution Tests
 
-- [ ] Données téléchargées (`bash data/download_data.sh`)
+- [ ] Données téléchargées (`bash data/download_simple.sh`)
 - [ ] Script test lancé selon assignation
 - [ ] Résultats générés (CSV + logs)
 - [ ] Cluster automatiquement supprimé

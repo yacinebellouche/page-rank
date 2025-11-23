@@ -203,11 +203,16 @@ results/
   - Création bucket Cloud Storage
   - Vérifications prérequis
 
-- ✅ `data/download_data.sh` - Téléchargement données
-  - Wikipedia DBpedia wikilinks (1.8 GB)
-  - Décompression automatique
-  - Création sous-ensemble 10% pour tests
-  - Upload vers Cloud Storage
+- ✅ `data/download_simple.sh` - ⭐ Téléchargement optimisé
+  - Wikipedia DBpedia wikilinks (1.8 GB compressé .bz2)
+  - Upload direct vers GCS (pas de décompression locale)
+  - Création sous-ensemble 10% compressé (180 MB)
+  - PySpark décompresse automatiquement à la lecture
+  - Économise 10 GB d'espace Cloud Shell
+
+- ❌ `data/download_data.sh` - SUPPRIMÉ
+  - Problème: Dépassait limite espace Cloud Shell (5 GB)
+  - Remplacé par download_simple.sh
 
 - ✅ `scripts/test_config_*workers.sh` - Tests automatisés
   - Création cluster (2, 4, ou 6 workers)

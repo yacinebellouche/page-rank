@@ -35,7 +35,7 @@ page-rank/
 │   └── pagerank_dataframe.py         # Implémentation DataFrame
 │
 ├── 📁 data/                          # Données et scripts
-│   └── download_data.sh              # Téléchargement données Wikipedia
+│   └── download_simple.sh            # ⭐ Téléchargement optimisé (.bz2)
 │
 ├── 📁 scripts/                       # Scripts d'exécution
 │   ├── test_config_2workers.sh       # ⭐ Test automatisé 2 workers
@@ -61,7 +61,7 @@ page-rank/
 | **Code Python** | 3 fichiers | RDD, DataFrame, utils |
 | **Scripts Bash** | 7 fichiers | Setup, tests, compilation, cleanup |
 | **Configuration** | 2 fichiers | requirements.txt, .gitignore |
-| **Données** | 1 fichier | download_data.sh |
+| **Données** | 1 fichier | download_simple.sh |
 | **TOTAL** | **23 fichiers** | + dossiers results/ générés |
 
 ---
@@ -77,8 +77,14 @@ bash setup_gcp.sh
 ### 2️⃣ Téléchargement Données (Une seule fois)
 ```bash
 cd data
-bash download_data.sh
+bash download_simple.sh  # ⭐ Version optimisée (.bz2)
 ```
+
+**💡 Pourquoi download_simple.sh ?**
+- Utilise fichiers .bz2 compressés (1.8 GB au lieu de 11 GB)
+- Pas de décompression locale (économise 10 GB)
+- PySpark décompresse automatiquement
+- Fonctionne dans Cloud Shell (limite 5 GB)
 
 ### 3️⃣ Tests (EN PARALLÈLE - 3 membres)
 ```bash
@@ -127,7 +133,7 @@ Les fichiers suivants ont été **supprimés** car obsolètes :
 **⚠️ CRITIQUE:** Modifier `PROJECT_ID` dans **7 fichiers** :
 
 1. ✅ `setup_gcp.sh` - Ligne 4
-2. ✅ `data/download_data.sh` - Ligne 4
+2. ✅ `data/download_simple.sh` - Ligne 4
 3. ✅ `scripts/test_config_2workers.sh` - Ligne 4
 4. ✅ `scripts/test_config_4workers.sh` - Ligne 4
 5. ✅ `scripts/test_config_6workers.sh` - Ligne 4
