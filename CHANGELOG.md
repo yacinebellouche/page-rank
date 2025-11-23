@@ -209,14 +209,20 @@ results/
   - Création sous-ensemble 10% pour tests
   - Upload vers Cloud Storage
 
-- ✅ `scripts/create_cluster.sh` - Création cluster
-  - Paramétrable (2, 4, 6 workers)
-  - VMs préemptibles (80% économie)
-  - Configuration Spark optimale
+- ✅ `scripts/test_config_*workers.sh` - Tests automatisés
+  - Création cluster (2, 4, ou 6 workers)
+  - VMs préemptibles e2-standard-4 (95% économie)
+  - Exécution RDD + DataFrame (10% + 100%)
+  - Suppression automatique (max-idle: 60s)
+  - Génération CSV par configuration
   - Région europe-west1
 
+- ✅ `scripts/compile_results.sh` - Compilation résultats
+  - Agrégation de tous les CSV
+  - Génération de 3 graphiques PNG
+
 - ✅ `scripts/cleanup.sh` - Nettoyage ressources
-  - Suppression clusters
+  - Suppression clusters orphelins
   - Suppression buckets
   - Confirmation utilisateur
 

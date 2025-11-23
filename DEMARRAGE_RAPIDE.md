@@ -215,8 +215,10 @@ page-rank/
 │   └── pagerank_dataframe.py   # Implémentation DataFrame
 │
 ├── scripts/
-│   ├── create_cluster.sh       # Création cluster Dataproc
-│   ├── run_experiments.sh      # Exécution des expériences
+│   ├── test_config_2workers.sh # Test automatisé 2 workers
+│   ├── test_config_4workers.sh # Test automatisé 4 workers
+│   ├── test_config_6workers.sh # Test automatisé 6 workers
+│   ├── compile_results.sh      # Compilation résultats
 │   └── cleanup.sh              # Nettoyage ressources
 │
 └── results/
@@ -246,8 +248,8 @@ gcloud services enable storage.googleapis.com
 ### Out of memory
 
 ```bash
-# Augmenter le nombre de workers
-bash create_cluster.sh 6  # au lieu de 2
+# Utiliser un script avec plus de workers
+bash test_config_6workers.sh  # au lieu de test_config_2workers.sh
 ```
 
 ### Coûts trop élevés

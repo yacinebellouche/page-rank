@@ -118,7 +118,7 @@ spark = SparkSession.builder \
 ### ✅ Configuration Cluster
 
 ```bash
-# scripts/create_cluster.sh - Lignes 50-55
+# scripts/test_config_*workers.sh - Configuration commune
 
 --properties="
   spark:spark.executor.memory=10g,
@@ -173,7 +173,7 @@ def calculer_contributions(urls, rank):
 ### 💰 Machines Préemptibles
 
 ```bash
-# scripts/create_cluster.sh - Ligne 45
+# scripts/test_config_*workers.sh - Configuration commune
 
 --num-preemptible-workers=$NUM_WORKERS
 ```
@@ -190,7 +190,7 @@ def calculer_contributions(urls, rank):
 ### 💰 Arrêt Automatique
 
 ```bash
-# scripts/create_cluster.sh - Ligne 50
+# scripts/test_config_*workers.sh - Configuration commune
 
 --max-idle=60s  # 60 secondes (minimum GCP pour suppression rapide)
 ```

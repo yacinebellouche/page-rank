@@ -75,22 +75,6 @@ bash compile_results.sh
 
 ### ⚙️ Scripts Utilitaires
 
-#### `create_cluster.sh`
-**Usage :** Créer un cluster Dataproc manuellement
-```bash
-bash create_cluster.sh NUM_WORKERS
-```
-
-**Paramètres :**
-- `NUM_WORKERS` : Nombre de workers (2, 4, ou 6)
-
-**Exemple :**
-```bash
-bash create_cluster.sh 4  # Crée cluster avec 4 workers
-```
-
-**Note :** Les scripts `test_config_*workers.sh` appellent ce script automatiquement.
-
 #### `cleanup.sh`
 **Usage :** Nettoyer toutes les ressources GCP manuellement
 ```bash

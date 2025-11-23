@@ -137,7 +137,6 @@ page-rank/
 │       ├── test_config_6workers.sh ✨ NEW
 │       ├── compile_results.sh ✨ NEW
 │       ├── generate_graphs.py ✨ NEW
-│       ├── create_cluster.sh
 │       ├── cleanup.sh
 │       └── README.md
 │

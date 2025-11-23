@@ -116,12 +116,10 @@ gcloud config list
 ```bash
 # Fichiers à modifier:
 1. setup_gcp.sh
-2. data/download_data.sh
-3. scripts/create_cluster.sh
-4. scripts/run_experiments.sh
-5. scripts/cleanup.sh
-
-# Dans chaque fichier, remplacer:
+2. data/download_data.sh  
+3. scripts/test_config_2workers.sh (ou 4/6 workers)
+4. scripts/compile_results.sh
+5. scripts/cleanup.sh# Dans chaque fichier, remplacer:
 PROJECT_ID="votre-project-id"
 
 # Par (exemple):
@@ -242,24 +240,26 @@ chmod +x *.sh
 ### Étape 4.3: Exécution Automatisée (Toutes les Configurations)
 
 ```bash
-# Lance TOUTES les expériences (2, 4, 6 workers)
-bash run_experiments.sh
+# Chaque membre de l'équipe lance UNE configuration:
+Membre 1: bash test_config_2workers.sh
+Membre 2: bash test_config_4workers.sh
+Membre 3: bash test_config_6workers.sh
 ```
 
-**⚠️ Durée totale estimée:** 2-4 heures
+**⚠️ Durée par configuration:** 40-60 minutes
 
-**Ce que fait le script:**
+**Ce que fait chaque script:**
 
-Pour chaque configuration (2, 4, 6 workers):
-1. ✅ Crée le cluster Dataproc
+1. ✅ Crée le cluster Dataproc avec N workers
 2. ✅ Exécute PageRank RDD avec 10% des données
 3. ✅ Exécute PageRank DataFrame avec 10% des données
-4. ❓ Demande si vous voulez tester avec 100%
-5. ✅ Supprime le cluster (économie!)
-6. ✅ Passe à la configuration suivante
+4. ✅ Exécute PageRank RDD avec 100% des données
+5. ✅ Exécute PageRank DataFrame avec 100% des données
+6. ✅ Supprime le cluster automatiquement (max-idle: 60s)
+7. ✅ Génère results/config_Nworkers/comparison.csv
 
 **Logs sauvegardés:**
-- `results/rdd_2workers_10pct.log`
+- `results/config_2workers/rdd_10pct.log`
 - `results/df_2workers_10pct.log`
 - `results/rdd_4workers_10pct.log`
 - `results/df_4workers_10pct.log`
@@ -270,9 +270,12 @@ Pour chaque configuration (2, 4, 6 workers):
 Si vous préférez contrôler chaque étape:
 
 ```bash
-# CONFIGURATION 1: 2 workers
-# Étape 1: Créer le cluster
-bash create_cluster.sh 2
+# CONFIGURATION 1: 2 workers (DÉCONSEILLÉ - Utiliser test_config_2workers.sh)
+# Les scripts test_config_*workers.sh font ceci automatiquement
+
+# Si vraiment vous voulez le faire manuellement:
+# Créer le cluster avec gcloud dataproc clusters create...
+# (voir le contenu de test_config_2workers.sh pour la commande complète)
 
 # Étape 2: Uploader les scripts
 gsutil cp ../src/*.py gs://VOTRE-PROJECT-ID-pagerank-data/scripts/
@@ -280,7 +283,7 @@ gsutil cp ../src/*.py gs://VOTRE-PROJECT-ID-pagerank-data/scripts/
 # Étape 3: Tester RDD (10%)
 gcloud dataproc jobs submit pyspark \
   gs://VOTRE-PROJECT-ID-pagerank-data/scripts/pagerank_rdd.py \
-  --cluster=pagerank-cluster \
+  --cluster=pagerank-cluster-2workers \
   --region=europe-west1 \
   --py-files=gs://VOTRE-PROJECT-ID-pagerank-data/scripts/utils.py \
   -- gs://VOTRE-PROJECT-ID-pagerank-data/data/wikilinks_10percent.ttl 10
@@ -288,7 +291,7 @@ gcloud dataproc jobs submit pyspark \
 # Étape 4: Tester DataFrame (10%)
 gcloud dataproc jobs submit pyspark \
   gs://VOTRE-PROJECT-ID-pagerank-data/scripts/pagerank_dataframe.py \
-  --cluster=pagerank-cluster \
+  --cluster=pagerank-cluster-2workers \
   --region=europe-west1 \
   --py-files=gs://VOTRE-PROJECT-ID-pagerank-data/scripts/utils.py \
   -- gs://VOTRE-PROJECT-ID-pagerank-data/data/wikilinks_10percent.ttl 10
@@ -455,12 +458,12 @@ gcloud services enable compute.googleapis.com
 ```bash
 # Option 1: Réduire les données (tester avec 10% d'abord)
 
-# Option 2: Augmenter la mémoire des executors
-# Modifier dans create_cluster.sh:
---properties="spark:spark.executor.memory=12g,spark:spark.driver.memory=12g"
+# Option 2: Utiliser une configuration avec plus de workers
+bash test_config_6workers.sh  # au lieu de test_config_2workers.sh
 
-# Option 3: Augmenter le nombre de workers
-bash create_cluster.sh 6  # au lieu de 2
+# Option 3: Si vraiment nécessaire, modifier les scripts test_config_*workers.sh
+# pour augmenter la mémoire:
+--properties="spark:spark.executor.memory=12g,spark:spark.driver.memory=12g"
 ```
 
 ### Problème 4: Téléchargement des Données Échoue

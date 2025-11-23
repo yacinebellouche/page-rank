@@ -115,7 +115,6 @@ Ce fichier vous guide vers la bonne documentation selon votre besoin.
 | **test_config_6workers.sh** | ⭐ AUTO | Test automatisé 6 workers |
 | **compile_results.sh** | ⭐ AUTO | Compilation résultats |
 | **generate_graphs.py** | Python | Génération graphiques |
-| **create_cluster.sh** | Utilitaire | Création cluster |
 | **cleanup.sh** | Utilitaire | Nettoyage |
 | **scripts/README.md** | Doc | Guide scripts |
 

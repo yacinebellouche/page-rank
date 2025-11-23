@@ -10,8 +10,10 @@
 
 - [ ] `setup_gcp.sh` - Ligne 4
 - [ ] `data/download_data.sh` - Ligne 4
-- [ ] `scripts/create_cluster.sh` - Ligne 4
-- [ ] `scripts/run_experiments.sh` - Ligne 4
+- [ ] `scripts/test_config_2workers.sh` - Ligne 4
+- [ ] `scripts/test_config_4workers.sh` - Ligne 4
+- [ ] `scripts/test_config_6workers.sh` - Ligne 4
+- [ ] `scripts/compile_results.sh` - Ligne 4
 - [ ] `scripts/cleanup.sh` - Ligne 4
 
 **Comment vérifier:**
@@ -276,8 +278,8 @@ gcloud dataproc jobs describe JOB-ID --region=europe-west1
 
 **Si out of memory:**
 ```bash
-# Augmenter workers ou mémoire
-# Modifier create_cluster.sh
+# Utiliser config avec plus de workers
+bash test_config_6workers.sh  # au lieu de test_config_2workers.sh
 ```
 
 **Si coûts trop élevés:**

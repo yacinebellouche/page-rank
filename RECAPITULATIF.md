@@ -72,19 +72,19 @@ bash compile_results.sh
    - Crée échantillon 10%
    - Upload vers GCS
 
-3. **scripts/create_cluster.sh** - Cluster Dataproc
-   - Machines préemptibles (80% économie)
-   - Arrêt automatique
-   - Configuration optimale
-
-4. **scripts/run_experiments.sh** - Exécution complète
-   - Teste 2, 4, 6 workers
-   - RDD et DataFrame
+3. **scripts/test_config_*workers.sh** - Tests automatisés
+   - Crée cluster avec machines préemptibles (80% économie)
+   - Teste RDD et DataFrame
    - 10% et 100% des données
-   - Sauvegarde logs
+   - Supprime cluster automatiquement (max-idle: 60s)
+   - Sauvegarde logs et CSV
+
+4. **scripts/compile_results.sh** - Compilation
+   - Agrège tous les CSV
+   - Génère 3 graphiques PNG
 
 5. **scripts/cleanup.sh** - Nettoyage
-   - Supprime clusters
+   - Supprime clusters orphelins
    - Vérifie coûts
    - Optionnel: supprime bucket
 
@@ -181,8 +181,10 @@ bash compile_results.sh
    # Chercher et remplacer dans:
    - setup_gcp.sh
    - data/download_data.sh
-   - scripts/create_cluster.sh
-   - scripts/run_experiments.sh
+   - scripts/test_config_2workers.sh
+   - scripts/test_config_4workers.sh
+   - scripts/test_config_6workers.sh
+   - scripts/compile_results.sh
    - scripts/cleanup.sh
    ```
 
@@ -211,13 +213,22 @@ bash compile_results.sh
    cd ..
    ```
 
-3. **Lancer expériences** (2-3 heures)
+3. **Lancer tests** (40-60 min par config, EN PARALLÈLE)
    ```bash
    cd scripts
-   bash run_experiments.sh
+   
+   # Chaque membre prend 1 config:
+   Membre 1: bash test_config_2workers.sh
+   Membre 2: bash test_config_4workers.sh
+   Membre 3: bash test_config_6workers.sh
    ```
 
-4. **Nettoyer** (2 min)
+4. **Compiler résultats** (2 min)
+   ```bash
+   bash compile_results.sh  # Génère CSV et graphiques
+   ```
+
+5. **Nettoyer si nécessaire** (2 min)
    ```bash
    bash cleanup.sh
    ```
@@ -457,12 +468,14 @@ git status
 - **Total: 6-8h sur 2-3 jours**
 
 ### Q4: Où modifier PROJECT_ID?
-**R:** Dans 5 fichiers (ligne 4 de chaque):
+**R:** Dans 7 fichiers (ligne 4 de chaque):
 1. setup_gcp.sh
 2. data/download_data.sh
-3. scripts/create_cluster.sh
-4. scripts/run_experiments.sh
-5. scripts/cleanup.sh
+3. scripts/test_config_2workers.sh
+4. scripts/test_config_4workers.sh
+5. scripts/test_config_6workers.sh
+6. scripts/compile_results.sh
+7. scripts/cleanup.sh
 
 ### Q5: Que faire si ça ne marche pas?
 **R:**

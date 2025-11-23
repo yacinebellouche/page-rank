@@ -31,8 +31,11 @@ page-rank/
 │   └── pagerank_dataframe.py        🔵 Implémentation DataFrame
 │
 ├── 🎬 scripts/
-│   ├── create_cluster.sh            🏗️ Création cluster Dataproc
-│   ├── run_experiments.sh           🧪 Exécution expériences
+│   ├── test_config_2workers.sh      ✨ Test automatisé 2 workers
+│   ├── test_config_4workers.sh      ✨ Test automatisé 4 workers
+│   ├── test_config_6workers.sh      ✨ Test automatisé 6 workers
+│   ├── compile_results.sh           ✨ Compilation résultats
+│   ├── generate_graphs.py           📊 Génération graphiques
 │   └── cleanup.sh                   🧹 Nettoyage ressources
 │
 └── 📈 results/
@@ -239,52 +242,53 @@ google-cloud-dataproc==5.4.3
 
 ---
 
-## 🎬 Scripts d'Exécution (3 scripts Bash)
+## 🎬 Scripts d'Exécution (6 scripts)
 
-### scripts/create_cluster.sh 🏗️
+### scripts/test_config_2workers.sh ✨
 **Ce qu'il fait:**
-- Crée un cluster Dataproc
-- Configure machines préemptibles
-- Configure arrêt automatique
+- Crée cluster avec 2 workers (machines préemptibles e2-standard-4)
+- Exécute RDD et DataFrame (10% + 100%)
+- Supprime cluster automatiquement (max-idle: 60s)
+- Génère results/config_2workers/comparison.csv
 
 **À modifier:**
 - `PROJECT_ID` (ligne 4) ⚠️ OBLIGATOIRE
 
 **Usage:**
 ```bash
-bash create_cluster.sh 2  # 2 workers
-bash create_cluster.sh 4  # 4 workers
-bash create_cluster.sh 6  # 6 workers
+bash test_config_2workers.sh
 ```
 
-**Durée:** 2-5 minutes
+**Durée:** 40-60 minutes
 
-### scripts/run_experiments.sh 🧪
+### scripts/test_config_4workers.sh ✨
+**Identique mais avec 4 workers**
+
+### scripts/test_config_6workers.sh ✨
+**Identique mais avec 6 workers**
+
+### scripts/compile_results.sh ✨
 **Ce qu'il fait:**
-- Upload les scripts vers GCS
-- Pour chaque config (2, 4, 6 workers):
-  - Crée le cluster
-  - Exécute RDD (10%)
-  - Exécute DataFrame (10%)
-  - Demande confirmation pour 100%
-  - Supprime le cluster
-
-**À modifier:**
-- `PROJECT_ID` (ligne 4) ⚠️ OBLIGATOIRE
+- Agrège tous les CSV (results/config_*/comparison.csv)
+- Génère 3 graphiques PNG dans results/graphs/:
+  - execution_time_comparison.png
+  - speedup_comparison.png
+  - scalability_analysis.png
 
 **Usage:**
 ```bash
-bash run_experiments.sh
+bash compile_results.sh
 ```
 
-**Durée:** 2-4 heures (toutes configs)
+**Durée:** < 1 minute
 
-**Sortie:**
-- Logs dans `results/*.log`
+### scripts/generate_graphs.py 🐍
+**Script Python appelé par compile_results.sh**
+- Utilise matplotlib pour générer les graphiques
 
 ### scripts/cleanup.sh 🧹
 **Ce qu'il fait:**
-- Supprime tous les clusters
+- Supprime tous les clusters orphelins
 - Liste les ressources actives
 - Propose de supprimer le bucket
 
@@ -344,24 +348,30 @@ bash cleanup.sh
 
 ### Phase 1: Configuration (30 minutes)
 1. Lire `DEMARRAGE_RAPIDE.md`
-2. Modifier `PROJECT_ID` dans les 5 scripts
+2. Modifier `PROJECT_ID` dans les 7 scripts
 3. Exécuter `setup_gcp.sh`
 4. Exécuter `data/download_data.sh`
 
-### Phase 2: Exécution (2-4 heures)
+### Phase 2: Exécution (40-60 min par config, EN PARALLÈLE)
 1. Consulter `CHECKLIST.md`
-2. Exécuter `scripts/run_experiments.sh`
+2. Chaque membre exécute 1 config:
+   - Membre 1: `scripts/test_config_2workers.sh`
+   - Membre 2: `scripts/test_config_4workers.sh`
+   - Membre 3: `scripts/test_config_6workers.sh`
 3. Surveiller les logs
 4. Sauvegarder les résultats
 
-### Phase 3: Analyse (2-3 heures)
-1. Extraire les temps des logs
+### Phase 3: Compilation (< 1 minute)
+1. Exécuter `scripts/compile_results.sh`
+2. Vérifier les CSV et graphiques générés dans `results/`
+
+### Phase 4: Analyse (2-3 heures)
+1. Analyser les CSV et graphiques
 2. Remplir les tableaux dans `README.md`
 3. Compléter `results/performance_analysis.md`
-4. Créer les graphiques
 
-### Phase 4: Nettoyage (10 minutes)
-1. Exécuter `scripts/cleanup.sh`
+### Phase 5: Nettoyage (10 minutes)
+1. Exécuter `scripts/cleanup.sh` si nécessaire
 2. Vérifier les coûts
 3. Valider avec `CHECKLIST.md`
 
@@ -380,9 +390,11 @@ bash cleanup.sh
 **⚠️ CRITIQUE:**
 1. `setup_gcp.sh` - Ligne 4 - `PROJECT_ID`
 2. `data/download_data.sh` - Ligne 4 - `PROJECT_ID`
-3. `scripts/create_cluster.sh` - Ligne 4 - `PROJECT_ID`
-4. `scripts/run_experiments.sh` - Ligne 4 - `PROJECT_ID`
-5. `scripts/cleanup.sh` - Ligne 4 - `PROJECT_ID`
+3. `scripts/test_config_2workers.sh` - Ligne 4 - `PROJECT_ID`
+4. `scripts/test_config_4workers.sh` - Ligne 4 - `PROJECT_ID`
+5. `scripts/test_config_6workers.sh` - Ligne 4 - `PROJECT_ID`
+6. `scripts/compile_results.sh` - Ligne 4 - `PROJECT_ID`
+7. `scripts/cleanup.sh` - Ligne 4 - `PROJECT_ID`
 
 ### Après l'Exécution
 

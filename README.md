@@ -139,8 +139,10 @@ Cela génère :
 **IMPORTANT:** Avant toute exécution, modifiez la variable `PROJECT_ID` dans TOUS les scripts :
 - `setup_gcp.sh`
 - `data/download_data.sh`
-- `scripts/create_cluster.sh`
-- `scripts/run_experiments.sh`
+- `scripts/test_config_2workers.sh`
+- `scripts/test_config_4workers.sh`
+- `scripts/test_config_6workers.sh`
+- `scripts/compile_results.sh`
 - `scripts/cleanup.sh`
 
 ```bash
@@ -173,21 +175,25 @@ cd ..
 
 ⚠️ **Attention:** Le téléchargement complet fait ~1.8 GB. Le script crée automatiquement un échantillon de 10% pour les tests.
 
-#### Étape 3: Exécuter les expériences
+#### Étape 3: Exécuter les tests (EN PARALLÈLE)
 
 ```bash
 cd scripts
-bash run_experiments.sh
+
+# Chaque membre de l'équipe prend UNE configuration:
+Membre 1: bash test_config_2workers.sh
+Membre 2: bash test_config_4workers.sh  
+Membre 3: bash test_config_6workers.sh
 ```
 
-Le script va :
-1. Créer un cluster avec 2 workers
+Chaque script va :
+1. Créer un cluster avec N workers
 2. Tester RDD et DataFrame avec 10% des données
-3. Demander confirmation pour tester avec 100%
-4. Supprimer le cluster
-5. Répéter pour 4 et 6 workers
+3. Tester RDD et DataFrame avec 100% des données
+4. Supprimer le cluster automatiquement (max-idle: 60s)
+5. Générer results/config_Nworkers/comparison.csv
 
-#### Étape 4: Analyser les résultats
+#### Étape 4: Compiler les résultats
 
 Les logs sont sauvegardés dans `results/` :
 - `rdd_2workers_10pct.log`
@@ -290,7 +296,6 @@ page-rank/
 │   └── pagerank_dataframe.py          # Implémentation DataFrame
 │
 ├── scripts/
-│   ├── create_cluster.sh              # Création cluster Dataproc
 │   ├── test_config_2workers.sh        # ✨ Test automatisé 2 workers
 │   ├── test_config_4workers.sh        # ✨ Test automatisé 4 workers
 │   ├── test_config_6workers.sh        # ✨ Test automatisé 6 workers
