@@ -22,12 +22,12 @@ echo ""
 
 # Nettoyer les anciens fichiers si existants
 echo "🧹 Nettoyage des fichiers temporaires..."
-rm -f wikilinks_full.ttl.bz2 wikilinks_10percent.ttl.bz2 wikilinks_full.ttl wikilinks_10percent.ttl 2>/dev/null
+rm -f wikilinks_full.ttl.bz2 wikilinks_full.ttl 2>/dev/null
 echo "✅ Nettoyage terminé"
 echo ""
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "📥 ÉTAPE 1/4: Téléchargement du fichier compressé"
+echo "📥 ÉTAPE 1/3: Téléchargement du fichier compressé"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "📦 Téléchargement de 1.8 GB compressé..."
@@ -46,7 +46,7 @@ echo "✅ Téléchargement terminé"
 echo ""
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "☁️  ÉTAPE 2/4: Upload vers Google Cloud Storage"
+echo "☁️  ÉTAPE 2/3: Upload vers Google Cloud Storage"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "📤 Upload du fichier complet compressé..."
@@ -62,41 +62,11 @@ echo "✅ Fichier complet uploadé: gs://$BUCKET_NAME/data/wikilinks_full.ttl.bz
 echo ""
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "📦 ÉTAPE 3/4: Création de l'échantillon 10%"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo ""
-echo "🔄 Streaming et compression de l'échantillon..."
-echo "   (100,000 premières lignes)"
-
-gsutil cat gs://$BUCKET_NAME/data/wikilinks_full.ttl.bz2 | \
-    bunzip2 | \
-    head -n 100000 | \
-    bzip2 > wikilinks_10percent.ttl.bz2
-
-if [ $? -eq 0 ]; then
-    echo "✅ Échantillon créé localement"
-    
-    echo "📤 Upload de l'échantillon..."
-    gsutil cp wikilinks_10percent.ttl.bz2 gs://$BUCKET_NAME/data/
-    
-    if [ $? -eq 0 ]; then
-        echo "✅ Échantillon uploadé: gs://$BUCKET_NAME/data/wikilinks_10percent.ttl.bz2"
-    else
-        echo "⚠️  Problème lors de l'upload de l'échantillon"
-    fi
-else
-    echo "⚠️  Problème lors de la création de l'échantillon"
-    echo "    Le fichier complet est disponible dans GCS"
-fi
-
-echo ""
-
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "🗑️  ÉTAPE 4/4: Nettoyage des fichiers locaux"
+echo "🗑️  ÉTAPE 3/3: Nettoyage des fichiers locaux"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-rm -f wikilinks_full.ttl.bz2 wikilinks_10percent.ttl.bz2
+rm -f wikilinks_full.ttl.bz2
 
 echo "✅ Fichiers locaux supprimés (espace libéré)"
 echo ""
@@ -105,12 +75,11 @@ echo "========================================================================="
 echo "✅ TÉLÉCHARGEMENT ET UPLOAD TERMINÉS AVEC SUCCÈS!"
 echo "========================================================================="
 echo ""
-echo "📊 Fichiers créés dans GCS:"
+echo "📊 Fichier créé dans GCS:"
 echo "   ✅ gs://$BUCKET_NAME/data/wikilinks_full.ttl.bz2 (~1.8 GB)"
-echo "   ✅ gs://$BUCKET_NAME/data/wikilinks_10percent.ttl.bz2 (~180 MB)"
 echo ""
-echo "💾 Stockage total utilisé: ~2 GB compressé"
-echo "💰 Coût estimé: ~0.05€/mois"
+echo "💾 Stockage total utilisé: ~1.8 GB compressé"
+echo "💰 Coût estimé: ~0.04€/mois"
 echo ""
 echo "💡 NOTE TECHNIQUE:"
 echo "   - PySpark décompresse automatiquement les fichiers .bz2"

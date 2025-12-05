@@ -70,14 +70,12 @@ bash compile_results.sh
 2. **data/download_simple.sh** - Données Wikipedia (optimisé)
    - Télécharge 1.8 GB compressé (.bz2)
    - Upload direct vers GCS (pas de décompression locale)
-   - Crée échantillon 10% compressé (180 MB)
    - PySpark décompresse automatiquement
    - Économise 10 GB d'espace Cloud Shell
 
 3. **scripts/test_config_*workers.sh** - Tests automatisés
    - Crée cluster avec machines préemptibles (80% économie)
-   - Teste RDD et DataFrame
-   - 10% et 100% des données
+   - Teste RDD et DataFrame sur 100% des données
    - Supprime cluster automatiquement (max-idle: 60s)
    - Sauvegarde logs et CSV
 

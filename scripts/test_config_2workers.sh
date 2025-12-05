@@ -5,7 +5,7 @@
 # ============================================================================
 # Ce script exécute TOUT automatiquement pour la configuration 2 workers:
 # 1. Crée le cluster
-# 2. Exécute RDD et DataFrame (10% et 100%)
+# 2. Exécute RDD et DataFrame sur 100% des données
 # 3. Génère les graphiques et comparaisons
 # 4. Supprime le cluster IMMÉDIATEMENT
 # ============================================================================
@@ -92,57 +92,15 @@ echo -e "${GREEN}✅ Scripts uploadés${NC}"
 echo ""
 
 # ============================================================================
-# ÉTAPE 3: TESTS AVEC 10% DES DONNÉES
+# ÉTAPE 3: TESTS AVEC 100% DES DONNÉES
 # ============================================================================
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}📊 ÉTAPE 3/6: Tests avec 10% des données${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${GREEN}📊 ÉTAPE 3/4: Tests avec 100% des données${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
-# Fichiers .bz2 - PySpark décompresse automatiquement
-DATA_10PCT="gs://$BUCKET_NAME/data/wikilinks_10percent.ttl.bz2"
+# Fichier .bz2 - PySpark décompresse automatiquement
 DATA_FULL="gs://$BUCKET_NAME/data/wikilinks_full.ttl.bz2"
-
-# Test RDD - 10%
-echo -e "${RED}🔴 PageRank RDD (10%)...${NC}"
-START_TIME=$(date +%s)
-
-gcloud dataproc jobs submit pyspark gs://$BUCKET_NAME/scripts/pagerank_rdd.py \
-    --cluster=$CLUSTER_NAME \
-    --region=$REGION \
-    --py-files=gs://$BUCKET_NAME/scripts/utils.py \
-    -- $DATA_10PCT 10 \
-    > "$RESULTS_DIR/rdd_10pct.log" 2>&1
-
-END_TIME=$(date +%s)
-RDD_10_TIME=$((END_TIME - START_TIME))
-echo -e "${GREEN}✅ RDD 10% terminé en ${RDD_10_TIME}s${NC}"
-echo ""
-
-sleep 5
-
-# Test DataFrame - 10%
-echo -e "${BLUE}🔵 PageRank DataFrame (10%)...${NC}"
-START_TIME=$(date +%s)
-
-gcloud dataproc jobs submit pyspark gs://$BUCKET_NAME/scripts/pagerank_dataframe.py \
-    --cluster=$CLUSTER_NAME \
-    --region=$REGION \
-    --py-files=gs://$BUCKET_NAME/scripts/utils.py \
-    -- $DATA_10PCT 10 \
-    > "$RESULTS_DIR/df_10pct.log" 2>&1
-
-END_TIME=$(date +%s)
-DF_10_TIME=$((END_TIME - START_TIME))
-echo -e "${GREEN}✅ DataFrame 10% terminé en ${DF_10_TIME}s${NC}"
-echo ""
-
-# ============================================================================
-# ÉTAPE 4: TESTS AVEC 100% DES DONNÉES
-# ============================================================================
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}📊 ÉTAPE 4/6: Tests avec 100% des données${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
 # Test RDD - 100%
@@ -180,10 +138,10 @@ echo -e "${GREEN}✅ DataFrame 100% terminé en ${DF_FULL_TIME}s${NC}"
 echo ""
 
 # ============================================================================
-# ÉTAPE 5: GÉNÉRATION DES RÉSULTATS ET GRAPHIQUES
+# ÉTAPE 4: GÉNÉRATION DES RÉSULTATS ET GRAPHIQUES
 # ============================================================================
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}📈 ÉTAPE 5/6: Génération des résultats et comparaisons${NC}"
+echo -e "${GREEN}📈 ÉTAPE 4/4: Génération des résultats et comparaisons${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -203,16 +161,9 @@ Cluster: $CLUSTER_NAME
 Total vCPU: $TOTAL_VCPU
 
 ============================================================================
-TEMPS D'EXÉCUTION
+TEMPS D'EXÉCUTION (100% DES DONNÉES)
 ============================================================================
 
-Tests avec 10% des données:
-  RDD:       ${RDD_10_TIME}s
-  DataFrame: ${DF_10_TIME}s
-  Gagnant:   $([ $RDD_10_TIME -lt $DF_10_TIME ] && echo "RDD" || echo "DataFrame")
-  Différence: $((RDD_10_TIME > DF_10_TIME ? RDD_10_TIME - DF_10_TIME : DF_10_TIME - RDD_10_TIME))s
-
-Tests avec 100% des données:
   RDD:       ${RDD_FULL_TIME}s
   DataFrame: ${DF_FULL_TIME}s
   Gagnant:   $([ $RDD_FULL_TIME -lt $DF_FULL_TIME ] && echo "RDD" || echo "DataFrame")
@@ -228,17 +179,12 @@ DataFrame: $WIKI_CENTER_DF
 COMPARAISON RDD vs DataFrame
 ============================================================================
 
-Pourcentage d'amélioration (10%):
-  $([ $RDD_10_TIME -lt $DF_10_TIME ] && echo "RDD plus rapide de $(echo "scale=2; ($DF_10_TIME - $RDD_10_TIME) * 100 / $DF_10_TIME" | bc)%" || echo "DataFrame plus rapide de $(echo "scale=2; ($RDD_10_TIME - $DF_10_TIME) * 100 / $RDD_10_TIME" | bc)%")
-
-Pourcentage d'amélioration (100%):
+Pourcentage d'amélioration:
   $([ $RDD_FULL_TIME -lt $DF_FULL_TIME ] && echo "RDD plus rapide de $(echo "scale=2; ($DF_FULL_TIME - $RDD_FULL_TIME) * 100 / $DF_FULL_TIME" | bc)%" || echo "DataFrame plus rapide de $(echo "scale=2; ($RDD_FULL_TIME - $DF_FULL_TIME) * 100 / $RDD_FULL_TIME" | bc)%")
 
 ============================================================================
 FICHIERS GÉNÉRÉS
 ============================================================================
-  - rdd_10pct.log       : Log complet RDD 10%
-  - df_10pct.log        : Log complet DataFrame 10%
   - rdd_full.log        : Log complet RDD 100%
   - df_full.log         : Log complet DataFrame 100%
   - summary.txt         : Ce fichier
@@ -250,8 +196,6 @@ EOF
 # Créer fichier CSV pour graphiques
 cat > "$RESULTS_DIR/comparison.csv" << EOF
 Type,Dataset,Time_seconds
-RDD,10%,${RDD_10_TIME}
-DataFrame,10%,${DF_10_TIME}
 RDD,100%,${RDD_FULL_TIME}
 DataFrame,100%,${DF_FULL_TIME}
 EOF
@@ -259,8 +203,6 @@ EOF
 echo -e "${GREEN}✅ Fichiers de résultats créés:${NC}"
 echo "  📄 $RESULTS_DIR/summary.txt"
 echo "  📄 $RESULTS_DIR/comparison.csv"
-echo "  📄 $RESULTS_DIR/rdd_10pct.log"
-echo "  📄 $RESULTS_DIR/df_10pct.log"
 echo "  📄 $RESULTS_DIR/rdd_full.log"
 echo "  📄 $RESULTS_DIR/df_full.log"
 echo ""
@@ -270,10 +212,10 @@ cat "$RESULTS_DIR/summary.txt"
 echo ""
 
 # ============================================================================
-# ÉTAPE 6: SUPPRESSION IMMÉDIATE DU CLUSTER
+# SUPPRESSION IMMÉDIATE DU CLUSTER
 # ============================================================================
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}🧹 ÉTAPE 6/6: Suppression IMMÉDIATE du cluster${NC}"
+echo -e "${GREEN}🧹 Suppression IMMÉDIATE du cluster${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 

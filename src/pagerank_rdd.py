@@ -171,7 +171,7 @@ def main():
     if len(sys.argv) < 2:
         print("❌ Usage: spark-submit pagerank_rdd.py <gs://bucket/data/fichier.ttl> [iterations]")
         print("\nExemple:")
-        print("  spark-submit pagerank_rdd.py gs://mon-bucket/data/wikilinks_10percent.ttl 10")
+        print("  spark-submit pagerank_rdd.py gs://mon-bucket/data/wikilinks_full.ttl.bz2 10")
         sys.exit(1)
     
     fichier = sys.argv[1]
