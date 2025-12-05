@@ -77,8 +77,8 @@ Results will be in `results/` directory with CSV files and summary.
 
 - **Machine type:** `e2-standard-4` (4 vCPU, 16 GB RAM)
 - **Region:** `europe-west1` (Belgium)
-- **Preemptible VMs:** Yes (80% cost savings)
-- **Auto-shutdown:** 60 seconds idle
+- **Preemptible VMs:** No (using regular workers for stability)
+- **Auto-shutdown:** 10 minutes idle
 
 | Configuration | Master  | Workers | Total vCPU | Quota Check |
 |---------------|---------|---------|------------|-------------|
@@ -131,11 +131,11 @@ spark.serializer = KryoSerializer
 - Total for 3 configs: ~15€
 
 ### Cost Saving Features
-- ✅ Preemptible VMs (80% discount)
-- ✅ Auto-shutdown after 60s idle
+- ✅ Auto-shutdown after 10 min idle
 - ✅ Immediate cluster deletion after tests
 - ✅ e2-standard-4 (cheaper than n1/n2)
-- ✅ Compressed data in GCS
+- ✅ Compressed data in GCS (.bz2 format)
+- ✅ Efficient spark configuration (200 partitions)
 
 ### Budget Monitoring
 
@@ -286,8 +286,13 @@ gcloud services disable storage.googleapis.com
 
 **Quota exceeded:**
 ```
-Solution: Request quota increase in GCP Console
-Or use smaller configurations (2 workers instead of 6)
+Solution 1: Request quota increase to 32 vCPUs in GCP Console
+  - Go to: https://console.cloud.google.com/iam-admin/quotas
+  - Filter: "CPUs (all regions)"
+  - Request increase to 32 or 40 vCPUs
+
+Solution 2: Use only 2 workers configuration (requires 12 vCPUs)
+Solution 3: Use smaller machine type (e2-standard-2 instead of e2-standard-4)
 ```
 
 **Permission denied:**

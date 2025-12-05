@@ -47,7 +47,7 @@ echo -e "${GREEN}📋 ÉTAPE 1/6: Création du cluster Dataproc${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
-TOTAL_VCPU=$((NUM_WORKERS * 2 + 2))
+TOTAL_VCPU=$((NUM_WORKERS * 4 + 4))
 echo "Configuration:"
 echo "  - Nom: $CLUSTER_NAME"
 echo "  - Workers: $NUM_WORKERS"
@@ -58,16 +58,16 @@ echo ""
 gcloud dataproc clusters create $CLUSTER_NAME \
     --region=$REGION \
     --zone=europe-west1-b \
-    --master-machine-type=e2-standard-2 \
+    --master-machine-type=e2-standard-4 \
     --master-boot-disk-size=50GB \
     --num-workers=$NUM_WORKERS \
-    --worker-machine-type=e2-standard-2 \
+    --worker-machine-type=e2-standard-4 \
     --worker-boot-disk-size=50GB \
     --image-version=2.1-debian11 \
     --project=$PROJECT_ID \
     --bucket=$BUCKET_NAME \
     --max-idle=10m \
-    --properties="spark:spark.executor.memory=5g,spark:spark.driver.memory=5g,spark:spark.executor.cores=1,spark:spark.sql.shuffle.partitions=200"
+    --properties="spark:spark.executor.memory=10g,spark:spark.driver.memory=10g,spark:spark.executor.cores=3,spark:spark.sql.shuffle.partitions=200"
 
 
 if [ $? -ne 0 ]; then
