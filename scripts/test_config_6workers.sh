@@ -43,7 +43,7 @@ mkdir -p "$RESULTS_DIR"
 # ÉTAPE 1: CRÉATION DU CLUSTER
 # ============================================================================
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}📋 ÉTAPE 1/6: Création du cluster Dataproc${NC}"
+echo -e "${GREEN}📋 ÉTAPE 1/5: Création du cluster Dataproc${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -83,7 +83,7 @@ sleep 10
 # ÉTAPE 2: UPLOAD DES SCRIPTS
 # ============================================================================
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}📤 ÉTAPE 2/6: Upload des scripts vers GCS${NC}"
+echo -e "${GREEN}📤 ÉTAPE 2/5: Upload des scripts vers GCS${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -95,7 +95,7 @@ echo ""
 # ÉTAPE 3: TESTS AVEC 100% DES DONNÉES
 # ============================================================================
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}📊 ÉTAPE 3/4: Tests avec 100% des données${NC}"
+echo -e "${GREEN}📊 ÉTAPE 3/5: Tests avec 100% des données${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -141,7 +141,7 @@ echo ""
 # ÉTAPE 4: GÉNÉRATION DES RÉSULTATS ET GRAPHIQUES
 # ============================================================================
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}📈 ÉTAPE 4/4: Génération des résultats et comparaisons${NC}"
+echo -e "${GREEN}📈 ÉTAPE 4/5: Génération des résultats et comparaisons${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -212,10 +212,10 @@ cat "$RESULTS_DIR/summary.txt"
 echo ""
 
 # ============================================================================
-# ÉTAPE 6: SUPPRESSION IMMÉDIATE DU CLUSTER
+# ÉTAPE 5: SUPPRESSION IMMÉDIATE DU CLUSTER
 # ============================================================================
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}🧹 ÉTAPE 6/6: Suppression IMMÉDIATE du cluster${NC}"
+echo -e "${GREEN}🧹 ÉTAPE 5/5: Suppression IMMÉDIATE du cluster${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 

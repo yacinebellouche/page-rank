@@ -43,7 +43,7 @@ mkdir -p "$RESULTS_DIR"
 # ÉTAPE 1: CRÉATION DU CLUSTER
 # ============================================================================
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}📋 ÉTAPE 1/6: Création du cluster Dataproc${NC}"
+echo -e "${GREEN}📋 ÉTAPE 1/5: Création du cluster Dataproc${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -83,7 +83,7 @@ sleep 10
 # ÉTAPE 2: UPLOAD DES SCRIPTS
 # ============================================================================
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}📤 ÉTAPE 2/6: Upload des scripts vers GCS${NC}"
+echo -e "${GREEN}📤 ÉTAPE 2/5: Upload des scripts vers GCS${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -95,7 +95,7 @@ echo ""
 # ÉTAPE 3: TESTS AVEC 100% DES DONNÉES
 # ============================================================================
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}📊 ÉTAPE 3/4: Tests avec 100% des données${NC}"
+echo -e "${GREEN}📊 ÉTAPE 3/5: Tests avec 100% des données${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -141,49 +141,7 @@ echo ""
 # ÉTAPE 4: GÉNÉRATION DES RÉSULTATS ET GRAPHIQUES
 # ============================================================================
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}📈 ÉTAPE 4/4: Génération des résultats et comparaisons${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo ""
-
-# Test RDD - 100%
-echo -e "${RED}🔴 PageRank RDD (100%)...${NC}"
-START_TIME=$(date +%s)
-
-gcloud dataproc jobs submit pyspark gs://$BUCKET_NAME/scripts/pagerank_rdd.py \
-    --cluster=$CLUSTER_NAME \
-    --region=$REGION \
-    --py-files=gs://$BUCKET_NAME/scripts/utils.py \
-    -- $DATA_FULL 10 \
-    > "$RESULTS_DIR/rdd_full.log" 2>&1
-
-END_TIME=$(date +%s)
-RDD_FULL_TIME=$((END_TIME - START_TIME))
-echo -e "${GREEN}✅ RDD 100% terminé en ${RDD_FULL_TIME}s${NC}"
-echo ""
-
-sleep 5
-
-# Test DataFrame - 100%
-echo -e "${BLUE}🔵 PageRank DataFrame (100%)...${NC}"
-START_TIME=$(date +%s)
-
-gcloud dataproc jobs submit pyspark gs://$BUCKET_NAME/scripts/pagerank_dataframe.py \
-    --cluster=$CLUSTER_NAME \
-    --region=$REGION \
-    --py-files=gs://$BUCKET_NAME/scripts/utils.py \
-    -- $DATA_FULL 10 \
-    > "$RESULTS_DIR/df_full.log" 2>&1
-
-END_TIME=$(date +%s)
-DF_FULL_TIME=$((END_TIME - START_TIME))
-echo -e "${GREEN}✅ DataFrame 100% terminé en ${DF_FULL_TIME}s${NC}"
-echo ""
-
-# ============================================================================
-# ÉTAPE 5: GÉNÉRATION DES RÉSULTATS ET GRAPHIQUES
-# ============================================================================
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}📈 ÉTAPE 5/6: Génération des résultats et comparaisons${NC}"
+echo -e "${GREEN}📈 ÉTAPE 4/5: Génération des résultats et comparaisons${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -254,10 +212,10 @@ cat "$RESULTS_DIR/summary.txt"
 echo ""
 
 # ============================================================================
-# ÉTAPE 6: SUPPRESSION IMMÉDIATE DU CLUSTER
+# ÉTAPE 5: SUPPRESSION IMMÉDIATE DU CLUSTER
 # ============================================================================
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}🧹 ÉTAPE 6/6: Suppression IMMÉDIATE du cluster${NC}"
+echo -e "${GREEN}🧹 ÉTAPE 5/5: Suppression IMMÉDIATE du cluster${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
