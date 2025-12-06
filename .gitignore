@@ -3,8 +3,6 @@ data/*.ttl
 data/*.ttl.bz2
 data/*.parquet
 
-# Logs d'exécution
-results/*.log
 
 # Python
 __pycache__/
@@ -36,3 +34,6 @@ Thumbs.db
 results/rdd_*
 results/df_*
 results/*_results/
+
+#gcloud exec
+exec -l/

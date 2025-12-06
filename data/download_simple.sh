@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-PROJECT_ID="votre-project-id"  # ⚠️ À MODIFIER OBLIGATOIREMENT
+PROJECT_ID="votre-projet-id"  #Changer PROJECT_ID
 BUCKET_NAME="${PROJECT_ID}-pagerank-data"
 DATA_URL="https://databus.dbpedia.org/dbpedia/generic/wikilinks/2022.12.01/wikilinks_lang=en.ttl.bz2"
 

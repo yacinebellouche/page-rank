@@ -11,7 +11,7 @@
 # ============================================================================
 
 # Configuration - MODIFIER ICI
-PROJECT_ID="votre-project-id"  # ⚠️ À MODIFIER OBLIGATOIREMENT
+PROJECT_ID="votre-projet-id"  #Changer PROJECT_ID
 REGION="europe-west1"
 CLUSTER_NAME="pagerank-cluster-6w"
 BUCKET_NAME="${PROJECT_ID}-pagerank-data"
@@ -67,8 +67,7 @@ gcloud dataproc clusters create $CLUSTER_NAME \
     --project=$PROJECT_ID \
     --bucket=$BUCKET_NAME \
     --max-idle=10m \
-    --properties="spark:spark.executor.memory=10g,spark:spark.driver.memory=10g,spark:spark.executor.cores=3,spark:spark.sql.shuffle.partitions=200"
-
+        --properties="spark:spark.executor.memory=12g,spark:spark.driver.memory=12g,spark:spark.executor.cores=3,spark:spark.sql.shuffle.partitions=200"
 
 if [ $? -ne 0 ]; then
     echo -e "${RED}❌ Échec de la création du cluster${NC}"

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration - MODIFIER ICI
-PROJECT_ID="votre-project-id"  # ⚠️ À MODIFIER OBLIGATOIREMENT
+PROJECT_ID="votre-projet-id"  #Changer PROJECT_ID
 REGION="europe-west1"
 BUCKET_NAME="${PROJECT_ID}-pagerank-data"
 

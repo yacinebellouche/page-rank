@@ -1,0 +1,160 @@
+Job [c8f5c5b49667417a8838e3757d744938] submitted.
+Waiting for job output...
+
+🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀
+DÉMARRAGE DU CALCUL PAGERANK - IMPLÉMENTATION DATAFRAME
+🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀
+
+
+⏱️  Début du chronomètre...
+25/12/06 17:51:06 INFO SparkEnv: Registering MapOutputTracker
+25/12/06 17:51:06 INFO SparkEnv: Registering BlockManagerMaster
+25/12/06 17:51:06 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+25/12/06 17:51:06 INFO SparkEnv: Registering OutputCommitCoordinator
+25/12/06 17:51:07 INFO DataprocSparkPlugin: Registered 128 driver metrics
+25/12/06 17:51:08 INFO DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at pagerank-cluster-6w-m.europe-west1-b.c.page-rank-479014.internal./10.132.0.37:8032
+25/12/06 17:51:08 INFO AHSProxy: Connecting to Application History server at pagerank-cluster-6w-m.europe-west1-b.c.page-rank-479014.internal./10.132.0.37:10200
+25/12/06 17:51:09 INFO Configuration: resource-types.xml not found
+25/12/06 17:51:09 INFO ResourceUtils: Unable to find 'resource-types.xml'.
+25/12/06 17:51:10 INFO YarnClientImpl: Submitted application application_1765041745083_0002
+25/12/06 17:51:11 INFO DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at pagerank-cluster-6w-m.europe-west1-b.c.page-rank-479014.internal./10.132.0.37:8030
+25/12/06 17:51:13 INFO GoogleCloudStorageImpl: Ignoring exception of type GoogleJsonResponseException; verified object already exists with desired state.
+
+================================================================================
+🔵 PageRank avec PySpark DataFrame
+================================================================================
+📁 Fichier d'entrée: gs://page-rank-479014-pagerank-data/data/wikilinks_full.ttl.bz2
+🔄 Itérations: 10
+📉 Damping factor: 0.85
+📦 Partitions: 200
+⚡ Adaptive Query Execution: Activé
+================================================================================
+
+📖 Étape 1/5: Chargement et parsing des données...
+   ✅ Parsing effectué en 0.99 secondes
+
+🔗 Étape 2/5: Construction du graphe de liens (DataFrame)...
+   ✅ Graphe construit en 416.62 secondes
+
+📊 Statistiques du graphe:
+------------------------------------------------------------
+   Pages avec liens sortants: 16,902,368
+   Liens sortants - Moyenne: 15.20
+------------------------------------------------------------
+
+⚖️  Étape 3/5: Initialisation des rangs PageRank...
+   ✅ 16,902,368 pages initialisées avec rang = 1.0
+
+🔄 Étape 4/5: Calcul PageRank (itérations)...
+--------------------------------------------------------------------------------
+Itération  1/10 [████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░]  10.0% 
+Itération  2/10 [████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░]  20.0% 
+Itération  3/10 [████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░]  30.0% 
+Itération  4/10 [████████████████░░░░░░░░░░░░░░░░░░░░░░░░]  40.0% 
+Itération  5/10 [████████████████████░░░░░░░░░░░░░░░░░░░░]  50.0% 
+Itération  6/10 [████████████████████████░░░░░░░░░░░░░░░░]  60.0% 
+Itération  7/10 [████████████████████████████░░░░░░░░░░░░]  70.0% 
+Itération  8/10 [████████████████████████████████░░░░░░░░]  80.0% 
+Itération  9/10 [████████████████████████████████████░░░░]  90.0% 
+Itération 10/10 [████████████████████████████████████████] 100.0% 
+--------------------------------------------------------------------------------
+✅ 10 itérations terminées en 1.63 secondes
+   Temps moyen par itération: 0.16 secondes
+
+📊 Étape 5/5: Calcul des résultats finaux...
+   ✅ Total de pages analysées: 20,797,428
+
+================================================================================
+🏆 Top 20 pages par PageRank
+================================================================================
+
++----------------------------------------------+------------------+
+|source                                        |rank              |
++----------------------------------------------+------------------+
+|Category:Living people                        |10628.693034847845|
+|United States                                 |5084.665656854216 |
+|World War II                                  |3309.4115898471077|
+|List of sovereign states                      |2821.3190907710787|
+|France                                        |2817.6060234400757|
+|Association football                          |2638.4227584310265|
+|Race and ethnicity in the United States census|2445.8559380461247|
+|United Kingdom                                |2328.5750609731294|
+|India                                         |2252.719813479389 |
+|Germany                                       |2128.2546626551175|
+|New York City                                 |1821.0520533012648|
+|Catholic Church                               |1795.9921218019467|
+|World War I                                   |1753.125879171884 |
+|Australia                                     |1709.409972009603 |
+|London                                        |1675.5056416050386|
+|Canada                                        |1663.0454424629352|
+|Category:Year of birth missing (living people)|1659.730987903327 |
+|Category:Unprintworthy redirects              |1634.8633501921765|
+|China                                         |1596.630807107297 |
+|Italy                                         |1588.1445187811476|
++----------------------------------------------+------------------+
+
+
+================================================================================
+
+💾 Sauvegarde des résultats dans: gs://page-rank-479014-pagerank-data/results/wikilinks_full_dataframe_results.bz2
+   ✅ Résultats sauvegardés (format Parquet)
+
+💾 Top 100 sauvegardé en CSV: gs://page-rank-479014-pagerank-data/results/wikilinks_full_dataframe_results.bz2_top100.csv
+
+
+================================================================================
+⏱️  Temps d'exécution: 14 min 23.20 sec (863.20 sec)
+================================================================================
+
+
+================================================================================
+🎯 RÉSUMÉ FINAL - PAGERANK DATAFRAME
+================================================================================
+🏆 CENTRE DE WIKIPEDIA:
+   Page: Category:Living people
+   PageRank: 10628.69303485
+
+📊 STATISTIQUES:
+   Total de pages: 20,797,428
+   Itérations: 10
+   Temps total: 863.20 secondes
+   Temps par itération: 86.32 secondes
+
+================================================================================
+✅ CALCUL TERMINÉ AVEC SUCCÈS
+================================================================================
+
+Job [c8f5c5b49667417a8838e3757d744938] finished successfully.
+done: true
+driverControlFilesUri: gs://page-rank-479014-pagerank-data/google-cloud-dataproc-metainfo/8ef45b70-d609-4efa-be71-552648a83801/jobs/c8f5c5b49667417a8838e3757d744938/
+driverOutputResourceUri: gs://page-rank-479014-pagerank-data/google-cloud-dataproc-metainfo/8ef45b70-d609-4efa-be71-552648a83801/jobs/c8f5c5b49667417a8838e3757d744938/driveroutput
+jobUuid: c473d75b-ecb8-38bc-ae2b-273d5aae101c
+placement:
+  clusterName: pagerank-cluster-6w
+  clusterUuid: 8ef45b70-d609-4efa-be71-552648a83801
+pysparkJob:
+  args:
+  - gs://page-rank-479014-pagerank-data/data/wikilinks_full.ttl.bz2
+  - '10'
+  mainPythonFileUri: gs://page-rank-479014-pagerank-data/scripts/pagerank_dataframe.py
+  pythonFileUris:
+  - gs://page-rank-479014-pagerank-data/scripts/utils.py
+reference:
+  jobId: c8f5c5b49667417a8838e3757d744938
+  projectId: page-rank-479014
+status:
+  state: DONE
+  stateStartTime: '2025-12-06T18:05:31.193933Z'
+statusHistory:
+- state: PENDING
+  stateStartTime: '2025-12-06T17:50:58.656741Z'
+- state: SETUP_DONE
+  stateStartTime: '2025-12-06T17:50:58.679858Z'
+- details: Agent reported job success
+  state: RUNNING
+  stateStartTime: '2025-12-06T17:50:58.909279Z'
+yarnApplications:
+- name: PageRank-DataFrame
+  progress: 1.0
+  state: FINISHED
+  trackingUrl: http://pagerank-cluster-6w-m.europe-west1-b.c.page-rank-479014.internal.:8088/proxy/application_1765041745083_0002/
