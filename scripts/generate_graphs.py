@@ -23,6 +23,7 @@ def create_comparison_graphs():
         if os.path.exists(csv_file):
             df = pd.read_csv(csv_file)
             df['Config'] = f"{config} workers"
+            df['NumWorkers'] = config
             all_data.append(df)
             print(f"✅ Données chargées pour {config} workers")
         else:
@@ -42,184 +43,137 @@ def create_comparison_graphs():
     print(f"\n📊 Génération des graphiques dans {graphs_dir}/...")
     
     # ========================================================================
-    # GRAPHIQUE 1: Comparaison RDD vs DataFrame par configuration
+    # GRAPHIQUE 1: Comparaison RDD vs DataFrame (100% données)
     # ========================================================================
-    plt.figure(figsize=(14, 8))
-    
-    # Données pour 10%
-    df_10 = combined_df[combined_df['Dataset'] == '10%']
-    configs_10 = df_10['Config'].unique()
-    
-    x = np.arange(len(configs_10))
-    width = 0.35
-    
-    rdd_times_10 = [df_10[(df_10['Config'] == c) & (df_10['Type'] == 'RDD')]['Time_seconds'].values[0] 
-                    for c in configs_10]
-    df_times_10 = [df_10[(df_10['Config'] == c) & (df_10['Type'] == 'DataFrame')]['Time_seconds'].values[0] 
-                   for c in configs_10]
-    
-    plt.subplot(2, 2, 1)
-    plt.bar(x - width/2, rdd_times_10, width, label='RDD', color='#e74c3c', alpha=0.8)
-    plt.bar(x + width/2, df_times_10, width, label='DataFrame', color='#3498db', alpha=0.8)
-    plt.xlabel('Configuration', fontsize=12)
-    plt.ylabel('Temps (secondes)', fontsize=12)
-    plt.title('Comparaison RDD vs DataFrame - 10% des données', fontsize=14, fontweight='bold')
-    plt.xticks(x, configs_10, rotation=0)
-    plt.legend()
-    plt.grid(axis='y', alpha=0.3)
+    plt.figure(figsize=(12, 7))
     
     # Données pour 100%
-    df_100 = combined_df[combined_df['Dataset'] == '100%']
+    df_100 = combined_df[combined_df['Dataset'] == '100%'].sort_values('NumWorkers')
     configs_100 = df_100['Config'].unique()
+    
+    x = np.arange(len(configs_100))
+    width = 0.35
     
     rdd_times_100 = [df_100[(df_100['Config'] == c) & (df_100['Type'] == 'RDD')]['Time_seconds'].values[0] 
                      for c in configs_100]
     df_times_100 = [df_100[(df_100['Config'] == c) & (df_100['Type'] == 'DataFrame')]['Time_seconds'].values[0] 
                     for c in configs_100]
     
-    plt.subplot(2, 2, 2)
-    plt.bar(x - width/2, rdd_times_100, width, label='RDD', color='#e74c3c', alpha=0.8)
-    plt.bar(x + width/2, df_times_100, width, label='DataFrame', color='#3498db', alpha=0.8)
-    plt.xlabel('Configuration', fontsize=12)
-    plt.ylabel('Temps (secondes)', fontsize=12)
-    plt.title('Comparaison RDD vs DataFrame - 100% des données', fontsize=14, fontweight='bold')
-    plt.xticks(x, configs_100, rotation=0)
-    plt.legend()
-    plt.grid(axis='y', alpha=0.3)
-    
-    # ========================================================================
-    # GRAPHIQUE 2: Speedup avec l'augmentation des workers
-    # ========================================================================
-    if len(rdd_times_100) >= 2:
-        plt.subplot(2, 2, 3)
-        
-        # Calculer le speedup (baseline = 2 workers)
-        rdd_speedup = [rdd_times_100[0] / t for t in rdd_times_100]
-        df_speedup = [df_times_100[0] / t for t in df_times_100]
-        ideal_speedup = [1, 2, 3] if len(configs_100) == 3 else [1, 2]
-        
-        plt.plot(range(len(configs_100)), rdd_speedup, 'o-', label='RDD', color='#e74c3c', linewidth=2, markersize=8)
-        plt.plot(range(len(configs_100)), df_speedup, 's-', label='DataFrame', color='#3498db', linewidth=2, markersize=8)
-        plt.plot(range(len(configs_100)), ideal_speedup[:len(configs_100)], '--', 
-                 label='Speedup idéal', color='#2ecc71', linewidth=2)
-        
-        plt.xlabel('Configuration', fontsize=12)
-        plt.ylabel('Speedup', fontsize=12)
-        plt.title('Scalabilité - Speedup vs Configuration', fontsize=14, fontweight='bold')
-        plt.xticks(range(len(configs_100)), configs_100, rotation=0)
-        plt.legend()
-        plt.grid(True, alpha=0.3)
-    
-    # ========================================================================
-    # GRAPHIQUE 3: Amélioration DataFrame vs RDD (en pourcentage)
-    # ========================================================================
-    plt.subplot(2, 2, 4)
-    
-    improvements_10 = [(rdd - df) / rdd * 100 for rdd, df in zip(rdd_times_10, df_times_10)]
-    improvements_100 = [(rdd - df) / rdd * 100 for rdd, df in zip(rdd_times_100, df_times_100)]
-    
-    x = np.arange(len(configs_10))
-    width = 0.35
-    
-    colors_10 = ['#27ae60' if imp > 0 else '#e74c3c' for imp in improvements_10]
-    colors_100 = ['#27ae60' if imp > 0 else '#e74c3c' for imp in improvements_100]
-    
-    bars1 = plt.bar(x - width/2, improvements_10, width, label='10% données', color=colors_10, alpha=0.8)
-    bars2 = plt.bar(x + width/2, improvements_100, width, label='100% données', color=colors_100, alpha=0.8)
-    
-    plt.axhline(y=0, color='black', linestyle='-', linewidth=0.5)
-    plt.xlabel('Configuration', fontsize=12)
-    plt.ylabel('Amélioration (%)', fontsize=12)
-    plt.title('Amélioration DataFrame vs RDD', fontsize=14, fontweight='bold')
-    plt.xticks(x, configs_10, rotation=0)
-    plt.legend()
-    plt.grid(axis='y', alpha=0.3)
+    bars1 = plt.bar(x - width/2, rdd_times_100, width, label='RDD', color='#e74c3c', alpha=0.8, edgecolor='black')
+    bars2 = plt.bar(x + width/2, df_times_100, width, label='DataFrame', color='#3498db', alpha=0.8, edgecolor='black')
     
     # Ajouter les valeurs sur les barres
     for bars in [bars1, bars2]:
         for bar in bars:
             height = bar.get_height()
             plt.text(bar.get_x() + bar.get_width()/2., height,
-                    f'{height:.1f}%',
-                    ha='center', va='bottom' if height > 0 else 'top', fontsize=9)
+                    f'{int(height)}s\n({int(height/60)}min)',
+                    ha='center', va='bottom', fontsize=10, fontweight='bold')
+    
+    plt.xlabel('Configuration', fontsize=13, fontweight='bold')
+    plt.ylabel('Temps d\'exécution (secondes)', fontsize=13, fontweight='bold')
+    plt.title('Comparaison RDD vs DataFrame - Dataset Complet (100%)', fontsize=15, fontweight='bold', pad=20)
+    plt.xticks(x, configs_100, fontsize=11)
+    plt.legend(fontsize=12, loc='upper right')
+    plt.grid(axis='y', alpha=0.3, linestyle='--')
     
     plt.tight_layout()
-    plt.savefig(f"{graphs_dir}/comparison_all_configs.png", dpi=300, bbox_inches='tight')
-    print(f"✅ Graphique 1 sauvegardé: comparison_all_configs.png")
+    plt.savefig(f"{graphs_dir}/comparison_rdd_vs_dataframe.png", dpi=300, bbox_inches='tight')
+    print(f"✅ Graphique 1 sauvegardé: comparison_rdd_vs_dataframe.png")
     plt.close()
     
     # ========================================================================
-    # GRAPHIQUE 4: Temps d'exécution détaillé (ligne)
+    # GRAPHIQUE 2: Scalabilité - Speedup
     # ========================================================================
-    plt.figure(figsize=(12, 6))
+    plt.figure(figsize=(12, 7))
     
-    for dataset, marker, linestyle in [('10%', 'o', '-'), ('100%', 's', '--')]:
-        df_subset = combined_df[combined_df['Dataset'] == dataset]
-        
-        for impl_type, color in [('RDD', '#e74c3c'), ('DataFrame', '#3498db')]:
-            data = df_subset[df_subset['Type'] == impl_type]
-            configs_sorted = sorted(data['Config'].unique(), key=lambda x: int(x.split()[0]))
-            times = [data[data['Config'] == c]['Time_seconds'].values[0] for c in configs_sorted]
-            
-            label = f"{impl_type} - {dataset}"
-            plt.plot(range(len(configs_sorted)), times, marker=marker, linestyle=linestyle,
-                    label=label, color=color, linewidth=2, markersize=8)
+    # Calculer le speedup (baseline = 2 workers)
+    rdd_speedup = [rdd_times_100[0] / t for t in rdd_times_100]
+    df_speedup = [df_times_100[0] / t for t in df_times_100]
+    num_workers = [2, 4, 6]
+    ideal_speedup = [1, 2, 3]
     
-    plt.xlabel('Configuration', fontsize=12)
-    plt.ylabel('Temps d\'exécution (secondes)', fontsize=12)
-    plt.title('Évolution du Temps d\'Exécution - Toutes Configurations', fontsize=14, fontweight='bold')
-    plt.xticks(range(len(configs_sorted)), configs_sorted, rotation=0)
-    plt.legend(loc='best')
-    plt.grid(True, alpha=0.3)
+    plt.plot(num_workers, rdd_speedup, 'o-', label='RDD', color='#e74c3c', linewidth=3, markersize=12)
+    plt.plot(num_workers, df_speedup, 's-', label='DataFrame', color='#3498db', linewidth=3, markersize=12)
+    plt.plot(num_workers, ideal_speedup, '--', label='Speedup idéal (linéaire)', 
+             color='#2ecc71', linewidth=2, alpha=0.7)
+    
+    # Ajouter les valeurs
+    for i, (x, y) in enumerate(zip(num_workers, rdd_speedup)):
+        plt.text(x, y + 0.1, f'{y:.2f}x', ha='center', fontsize=10, fontweight='bold', color='#e74c3c')
+    for i, (x, y) in enumerate(zip(num_workers, df_speedup)):
+        plt.text(x, y - 0.2, f'{y:.2f}x', ha='center', fontsize=10, fontweight='bold', color='#3498db')
+    
+    plt.xlabel('Nombre de Workers', fontsize=13, fontweight='bold')
+    plt.ylabel('Speedup (par rapport à 2 workers)', fontsize=13, fontweight='bold')
+    plt.title('Scalabilité - Facteur d\'Accélération', fontsize=15, fontweight='bold', pad=20)
+    plt.xticks(num_workers, fontsize=11)
+    plt.legend(fontsize=12, loc='upper left')
+    plt.grid(True, alpha=0.3, linestyle='--')
+    
+    plt.tight_layout()
+    plt.savefig(f"{graphs_dir}/scalability_speedup.png", dpi=300, bbox_inches='tight')
+    print(f"✅ Graphique 2 sauvegardé: scalability_speedup.png")
+    plt.close()
+    
+    # ========================================================================
+    # GRAPHIQUE 3: Amélioration DataFrame vs RDD (en pourcentage)
+    # ========================================================================
+    plt.figure(figsize=(12, 7))
+    
+    improvements_100 = [(rdd - df) / rdd * 100 for rdd, df in zip(rdd_times_100, df_times_100)]
+    
+    colors = ['#27ae60' if imp > 0 else '#e74c3c' for imp in improvements_100]
+    bars = plt.bar(num_workers, improvements_100, color=colors, alpha=0.8, edgecolor='black', width=0.6)
+    
+    # Ajouter les valeurs sur les barres
+    for bar, imp in zip(bars, improvements_100):
+        height = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width()/2., height,
+                f'{imp:.1f}%',
+                ha='center', va='bottom' if height > 0 else 'top', 
+                fontsize=12, fontweight='bold')
+    
+    plt.axhline(y=0, color='black', linestyle='-', linewidth=1)
+    plt.xlabel('Nombre de Workers', fontsize=13, fontweight='bold')
+    plt.ylabel('Amélioration (%)', fontsize=13, fontweight='bold')
+    plt.title('Amélioration de Performance: DataFrame vs RDD', fontsize=15, fontweight='bold', pad=20)
+    plt.xticks(num_workers, fontsize=11)
+    plt.grid(axis='y', alpha=0.3, linestyle='--')
+    
+    plt.tight_layout()
+    plt.savefig(f"{graphs_dir}/improvement_percentage.png", dpi=300, bbox_inches='tight')
+    print(f"✅ Graphique 3 sauvegardé: improvement_percentage.png")
+    plt.close()
+    
+    # ========================================================================
+    # GRAPHIQUE 4: Évolution du temps d'exécution (lignes)
+    # ========================================================================
+    plt.figure(figsize=(12, 7))
+    
+    plt.plot(num_workers, rdd_times_100, 'o-', label='RDD', color='#e74c3c', 
+             linewidth=3, markersize=12)
+    plt.plot(num_workers, df_times_100, 's-', label='DataFrame', color='#3498db', 
+             linewidth=3, markersize=12)
+    
+    # Ajouter les valeurs
+    for x, y in zip(num_workers, rdd_times_100):
+        plt.text(x, y + 100, f'{int(y)}s', ha='center', fontsize=10, 
+                fontweight='bold', color='#e74c3c')
+    for x, y in zip(num_workers, df_times_100):
+        plt.text(x, y - 100, f'{int(y)}s', ha='center', fontsize=10, 
+                fontweight='bold', color='#3498db')
+    
+    plt.xlabel('Nombre de Workers', fontsize=13, fontweight='bold')
+    plt.ylabel('Temps d\'exécution (secondes)', fontsize=13, fontweight='bold')
+    plt.title('Évolution du Temps d\'Exécution', fontsize=15, fontweight='bold', pad=20)
+    plt.xticks(num_workers, fontsize=11)
+    plt.legend(fontsize=12, loc='upper right')
+    plt.grid(True, alpha=0.3, linestyle='--')
     
     plt.tight_layout()
     plt.savefig(f"{graphs_dir}/execution_time_evolution.png", dpi=300, bbox_inches='tight')
-    print(f"✅ Graphique 2 sauvegardé: execution_time_evolution.png")
-    plt.close()
-    
-    # ========================================================================
-    # GRAPHIQUE 5: Tableau récapitulatif
-    # ========================================================================
-    fig, ax = plt.subplots(figsize=(14, 6))
-    ax.axis('tight')
-    ax.axis('off')
-    
-    # Créer le tableau de données
-    table_data = [['Configuration', 'RDD 10%', 'DF 10%', 'Gain 10%', 'RDD 100%', 'DF 100%', 'Gain 100%']]
-    
-    for i, config in enumerate(configs_10):
-        rdd_10 = f"{rdd_times_10[i]:.0f}s"
-        df_10 = f"{df_times_10[i]:.0f}s"
-        gain_10 = f"{improvements_10[i]:+.1f}%"
-        rdd_100 = f"{rdd_times_100[i]:.0f}s" if i < len(rdd_times_100) else "N/A"
-        df_100 = f"{df_times_100[i]:.0f}s" if i < len(df_times_100) else "N/A"
-        gain_100 = f"{improvements_100[i]:+.1f}%" if i < len(improvements_100) else "N/A"
-        
-        table_data.append([config, rdd_10, df_10, gain_10, rdd_100, df_100, gain_100])
-    
-    table = ax.table(cellText=table_data, cellLoc='center', loc='center',
-                     colWidths=[0.15, 0.12, 0.12, 0.12, 0.12, 0.12, 0.12])
-    
-    table.auto_set_font_size(False)
-    table.set_fontsize(10)
-    table.scale(1, 2)
-    
-    # Styliser l'en-tête
-    for i in range(7):
-        table[(0, i)].set_facecolor('#3498db')
-        table[(0, i)].set_text_props(weight='bold', color='white')
-    
-    # Colorer les cellules de gain
-    for i in range(1, len(table_data)):
-        for j in [3, 6]:  # Colonnes de gain
-            if table_data[i][j] != "N/A":
-                gain = float(table_data[i][j].replace('%', '').replace('+', ''))
-                color = '#d5f4e6' if gain > 0 else '#fadbd8'
-                table[(i, j)].set_facecolor(color)
-    
-    plt.title('Tableau Récapitulatif - RDD vs DataFrame', fontsize=16, fontweight='bold', pad=20)
-    plt.savefig(f"{graphs_dir}/summary_table.png", dpi=300, bbox_inches='tight')
-    print(f"✅ Graphique 3 sauvegardé: summary_table.png")
+    print(f"✅ Graphique 4 sauvegardé: execution_time_evolution.png")
     plt.close()
     
     print(f"\n{'='*70}")
@@ -227,9 +181,10 @@ def create_comparison_graphs():
     print(f"{'='*70}")
     print(f"\n📁 Emplacement: {graphs_dir}/")
     print(f"\n📊 Graphiques créés:")
-    print(f"  1. comparison_all_configs.png  - Comparaisons complètes")
-    print(f"  2. execution_time_evolution.png - Évolution des temps")
-    print(f"  3. summary_table.png           - Tableau récapitulatif")
+    print(f"  1. comparison_rdd_vs_dataframe.png - Comparaison barres")
+    print(f"  2. scalability_speedup.png         - Scalabilité")
+    print(f"  3. improvement_percentage.png      - Amélioration %")
+    print(f"  4. execution_time_evolution.png    - Évolution temps")
     print(f"\n💡 Utilisez ces graphiques dans votre rapport!\n")
 
 if __name__ == "__main__":
