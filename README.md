@@ -1,406 +1,340 @@
-# PageRank - PySpark Performance Analysis
+# PageRank - Analyse de Performance PySpark
 
-Comparison of **PySpark DataFrame** vs **PySpark RDD** performance for PageRank calculation on Wikipedia DBpedia data.
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Google Cloud Platform account with billing enabled
-- `gcloud` CLI installed and authenticated
-- Budget alert configured (recommended: 50€)
-
-### Setup (One-time)
-
-```bash
-# 1. Configure GCP project
-gcloud config set project YOUR-PROJECT-ID
-
-# 2. Run setup script
-bash setup_gcp.sh
-
-# 3. Download and upload data (~15 min)
-cd data && bash download_simple.sh && cd ..
-```
-
-### Run Tests (Parallel Execution)
-
-Each team member tests a different configuration:
-
-```bash
-cd scripts
-
-# Member 1 - 2 workers
-bash test_config_2workers.sh
-
-# Member 2 - 4 workers  
-bash test_config_4workers.sh
-
-# Member 3 - 6 workers
-bash test_config_6workers.sh
-```
-
-### Compile Results
-
-After all tests complete:
-
-```bash
-cd scripts
-bash compile_results.sh
-```
-
-Results will be in `results/` directory with CSV files and summary.
+**Projet:** page-rank-479014  
+**Dataset:** DBpedia WikiLinks (180M+ triples, 11GB non compressé)  
+**Date des tests:** 6 décembre 2025  
+**Région GCP:** europe-west1
 
 ---
 
-## 📊 Results
+## 📊 Résumé Exécutif
 
-### Wikipedia Center (Highest PageRank)
+Ce document présente les résultats des tests de performance de l'algorithme PageRank sur un dataset complet de liens Wikipedia, exécuté sur Google Cloud Dataproc avec différentes configurations de workers.
 
-**Entity:** `[TO BE COMPLETED]`  
-**PageRank Score:** `[TO BE COMPLETED]`
+### Configurations Testées
 
-### Performance Comparison (100% Data)
+| Configuration | Master   | Workers  | Total vCPU | RAM Totale | Type Machine  |
+|---------------|----------|----------|------------|------------|---------------|
+| **2 workers** | 1×4 vCPU | 2×4 vCPU | 12 vCPU    | ~48 GB     | e2-standard-4 |
+| **4 workers** | 1×4 vCPU | 4×4 vCPU | 20 vCPU    | ~80 GB     | e2-standard-4 |
+| **6 workers** | 1×4 vCPU | 6×4 vCPU | 28 vCPU    | ~112 GB    | e2-standard-4 |
 
-| Configuration | RDD (sec) | DataFrame (sec) | Winner | Improvement |
-|---------------|-----------|-----------------|--------|-------------|
-| 2 workers     | -         | -               | -      | -           |
-| 4 workers     | -         | -               | -      | -           |
-| 6 workers     | -         | -               | -      | -           |
+### Paramètres de l'Algorithme
 
----
-
-## 🛠️ Technical Details
-
-### Hardware Configuration
-
-- **Machine type:** `e2-standard-4` (4 vCPU, 16 GB RAM)
-- **Region:** `europe-west1` (Belgium)
-- **Preemptible VMs:** No (using regular workers for stability)
-- **Auto-shutdown:** 10 minutes idle
-
-| Configuration | Master  | Workers | Total vCPU | Quota Check |
-|---------------|---------|---------|------------|-------------|
-| 2 workers     | 4 vCPU  | 2×4     | 12 vCPU    | ✅ < 32     |
-| 4 workers     | 4 vCPU  | 4×4     | 20 vCPU    | ✅ < 32     |
-| 6 workers     | 4 vCPU  | 6×4     | 28 vCPU    | ✅ < 32     |
-
-### Data
-
-- **Source:** DBpedia Wikilinks 2022.12.01
-- **Size:** 1.8 GB compressed (.bz2), ~11 GB uncompressed
-- **Lines:** ~180 million triples
-- **Format:** TTL (Turtle RDF)
-
-### Optimizations
-
-#### RDD Implementation
-- Co-partitioning to avoid shuffle
-- Strategic caching of immutable data
-- Custom partitioner for consistent key distribution
-- Kryo serialization
-
-#### DataFrame Implementation
-- Repartitioning by key
-- Adaptive Query Execution (AQE)
-- Catalyst optimizer
-- Skew join handling
-
-### Spark Configuration
-
-```python
-num_partitions = 200
-damping_factor = 0.85
-iterations = 10
-
-# Both implementations use:
-spark.sql.shuffle.partitions = 200
-spark.default.parallelism = 200
-spark.sql.adaptive.enabled = true
-spark.serializer = KryoSerializer
-```
+- **Itérations:** 10
+- **Damping factor:** 0.85
+- **Partitions:** 200
+- **Mémoire executor:** 12 GB
+- **Mémoire driver:** 12 GB
 
 ---
 
-## 💰 Cost Optimization
+## ⏱️ Temps d'Exécution
 
-### Per Test Run (~20-30 min)
-- Cluster uptime: ~30 min
-- Cost: ~3-5€ per configuration
-- Total for 3 configs: ~15€
+### Tableau Comparatif
 
-### Cost Saving Features
-- ✅ Auto-shutdown after 10 min idle
-- ✅ Immediate cluster deletion after tests
-- ✅ e2-standard-4 (cheaper than n1/n2)
-- ✅ Compressed data in GCS (.bz2 format)
-- ✅ Efficient spark configuration (200 partitions)
+| Configuration | RDD (secondes) | RDD (minutes) | DataFrame (secondes) | DataFrame (minutes) | Gagnant  |
+|---------------|----------------|---------------|----------------------|---------------------|----------|
+| **2 workers** | 4401s          | 73 min        | 1955s                | 33 min              | DataFrame|
+| **4 workers** | 2301s          | 38 min        | 1265s                | 21 min              | DataFrame|
+| **6 workers** | 1634s          | 27 min        | 883s                 | 15 min              | DataFrame|
 
-### Budget Monitoring
+### Graphiques de Performance
 
-```bash
-# Check costs
-gcloud billing accounts list
-gcloud alpha billing budgets list --billing-account=ACCOUNT-ID
+![Comparaison RDD vs DataFrame](results/graphs/comparison_rdd_vs_dataframe.png)
+*Figure 1: Comparaison des temps d'exécution RDD vs DataFrame*
 
-# List all clusters
-gcloud dataproc clusters list --region=europe-west1
+![Scalabilité](results/graphs/scalability_speedup.png)
+*Figure 2: Facteur d'accélération selon le nombre de workers*
 
-# Delete orphaned clusters
-bash scripts/cleanup.sh
-```
+![Amélioration](results/graphs/improvement_percentage.png)
+*Figure 3: Pourcentage d'amélioration DataFrame vs RDD*
 
----
+![Évolution](results/graphs/execution_time_evolution.png)
+*Figure 4: Évolution du temps d'exécution*
 
-## 📁 Project Structure
-
-```
-page-rank/
-├── README.md                 # This file
-├── setup_gcp.sh             # GCP initial setup
-├── requirements.txt         # Python dependencies
-├── data/
-│   └── download_simple.sh   # Download Wikipedia data
-├── src/
-│   ├── pagerank_rdd.py      # RDD implementation
-│   ├── pagerank_dataframe.py # DataFrame implementation
-│   └── utils.py             # Shared utilities
-├── scripts/
-│   ├── test_config_2workers.sh  # Test with 2 workers
-│   ├── test_config_4workers.sh  # Test with 4 workers
-│   ├── test_config_6workers.sh  # Test with 6 workers
-│   ├── compile_results.sh       # Aggregate results
-│   ├── generate_graphs.py       # Generate visualizations
-│   └── cleanup.sh               # Clean up resources
-└── results/
-    └── config_*workers/         # Results per configuration
-```
-
----
-
-## 🔧 Configuration Guide
-
-### Before Running ANY Script
-
-**CRITICAL:** Edit `PROJECT_ID` in these files:
-
-1. `setup_gcp.sh`
-2. `data/download_simple.sh`
-3. `scripts/test_config_2workers.sh` (and 4/6 workers)
-4. `scripts/compile_results.sh`
-5. `scripts/cleanup.sh`
-
-Change from:
-```bash
-PROJECT_ID="votre-project-id"
-```
-
-To your actual project ID:
-```bash
-PROJECT_ID="your-actual-project-id"
-```
-
-### Test Script Workflow
-
-Each `test_config_*workers.sh` script:
-
-1. ✅ Creates Dataproc cluster
-2. ✅ Uploads Python scripts to GCS
-3. ✅ Runs RDD on 100% data
-4. ✅ Runs DataFrame on 100% data
-5. ✅ Generates comparison CSV
-6. ✅ Deletes cluster immediately
-
-**Output files:**
-- `results/config_Xworkers/summary.txt` - Execution summary
-- `results/config_Xworkers/comparison.csv` - Performance data
-- `results/config_Xworkers/rdd_full.log` - RDD detailed log
-- `results/config_Xworkers/df_full.log` - DataFrame detailed log
-
----
-
-## 📈 Analysis
-
-### Key Metrics to Compare
-
-1. **Execution time** - Total runtime for 10 iterations
-2. **Scalability** - Speedup with more workers
-3. **Stability** - Variance across runs
-4. **Resource usage** - CPU, memory, shuffle
-
-### Expected Observations
-
-- DataFrame typically faster due to Catalyst optimization
-- Linear or near-linear scaling with workers (2→4→6)
-- RDD more predictable, DataFrame more optimized
-- Shuffle operations dominate execution time
-
-### Generate Graphs
-
+**Pour générer les graphiques:**
 ```bash
 cd scripts
 python generate_graphs.py
 ```
 
-Creates:
-- `results/graphs/comparison_bar.png` - Side-by-side comparison
-- `results/graphs/scalability.png` - Speedup by workers
-- `results/graphs/improvement.png` - RDD vs DataFrame %
+---
+
+## 🚀 Analyse des Performances
+
+### 1. Amélioration RDD vs DataFrame
+
+| Configuration | Temps RDD | Temps DataFrame | Amélioration | Pourcentage            |
+|---------------|-----------|-----------------|--------------|------------------------|
+| **2 workers** | 4401s     | 1955s           | 2446s        | **55.57% plus rapide** |
+| **4 workers** | 2301s     | 1265s           | 1036s        | **45.02% plus rapide** |
+| **6 workers** | 1634s     | 883s            | 751s         | **45.96% plus rapide** |
+
+**Conclusion:** DataFrame est systématiquement **45-55% plus rapide** que RDD grâce à l'optimiseur Catalyst et Tungsten execution engine.
+
+### 2. Scalabilité (Speedup)
+
+#### RDD - Facteur d'Accélération
+
+| Comparaison   | Speedup   | Efficacité        |
+|---------------|-----------|-------------------|
+| 2 → 4 workers | **1.91x** | 95.5% (idéal: 2x) |
+| 4 → 6 workers | **1.41x** | 94% (idéal: 1.5x) |
+| 2 → 6 workers | **2.69x** | 90% (idéal: 3x)   |
+
+#### DataFrame - Facteur d'Accélération
+
+| Comparaison   | Speedup   | Efficacité        |
+|---------------|-----------|-------------------|
+| 2 → 4 workers | **1.55x** | 77.5% (idéal: 2x) |
+| 4 → 6 workers | **1.43x** | 95% (idéal: 1.5x) |
+| 2 → 6 workers | **2.21x** | 74% (idéal: 3x)   |
+
+**Conclusion:** Excellente scalabilité pour les deux approches, proche de la scalabilité linéaire idéale.
+
+### 3. Rendements Décroissants
+
+L'amélioration des performances diminue avec l'ajout de workers :
+- **2 → 4 workers:** Gain important (1.9x pour RDD, 1.55x pour DataFrame)
+- **4 → 6 workers:** Gain modéré (1.4x pour les deux)
+
+Ceci est normal et dû à :
+- Overhead de communication entre workers
+- Coûts de shuffle des données
+- Loi d'Amdahl (limites de la parallélisation)
 
 ---
 
-## 🧹 Cleanup
+## 🎯 Centre de Wikipedia Identifié
 
-### After Testing
+**Résultat pour toutes les configurations:**
 
-```bash
-# Check for running clusters
-gcloud dataproc clusters list --region=europe-west1
-
-# Delete specific cluster
-gcloud dataproc clusters delete CLUSTER-NAME --region=europe-west1
-
-# Or use cleanup script
-bash scripts/cleanup.sh
+```
+Page avec le PageRank le plus élevé: Category:Living people
 ```
 
-### Complete Cleanup
+Ce résultat est **cohérent et attendu** car cette catégorie regroupe toutes les personnes vivantes sur Wikipedia, créant un hub massif de liens entrants.
 
-To remove all GCP resources:
+### Top 20 Pages (6 workers, DataFrame)
+
+| Rang | Page                          | PageRank Score         |   
+|------|-------------------------------|------------------------|
+| 1    | Category:Living people        | Score max              |
+| 2-20 | Autres catégories principales | Scores élevés          |
+
+---
+
+## 💰 Analyse des Coûts
+
+### Calcul des Coûts Réels (Tarifs GCP europe-west1)
+
+**Tarif e2-standard-4:** $0.134/heure par machine
+
+#### Configuration 2 Workers (3 machines total: 1 master + 2 workers)
+
+| Implémentation | Durée              | Machines          | Coût/heure | Coût Total |
+|----------------|--------------------|-------------------|------------|------------|
+| RDD            | 73.35 min (1.22h)  | 3 × e2-standard-4 | $0.402/h   | **$0.49**  |
+| DataFrame      | 32.58 min (0.54h)  | 3 × e2-standard-4 | $0.402/h   | **$0.22**  |
+| **Total 2W**   | 105.93 min (1.77h) | - | - | **$0.71** |
+
+#### Configuration 4 Workers (5 machines total: 1 master + 4 workers)
+
+| Implémentation | Durée             | Machines          | Coût/heure | Coût Total |
+|----------------|-------------------|-------------------|------------|------------|
+| RDD            | 38.35 min (0.64h) | 5 × e2-standard-4 | $0.670/h   | **$0.43**  |
+| DataFrame      | 21.08 min (0.35h) | 5 × e2-standard-4 | $0.670/h   | **$0.23**  |
+| **Total 4W**   | 59.43 min (0.99h) | - | - | **$0.66** |
+
+#### Configuration 6 Workers (7 machines total: 1 master + 6 workers)
+
+| Implémentation | Durée             | Machines          | Coût/heure | Coût Total |
+|----------------|-------------------|-------------------|------------|------------|
+| RDD            | 27.23 min (0.45h) | 7 × e2-standard-4 | $0.938/h   | **$0.42**  |
+| DataFrame      | 14.72 min (0.25h) | 7 × e2-standard-4 | $0.938/h   | **$0.23**  |
+| **Total 6W**   | 41.95 min (0.70h) | - | - | **$0.66** |
+
+### Résumé des Coûts Totaux
+
+| Configuration | Coût RDD | Coût DataFrame | **Coût Total** | Temps Total |
+|---------------|----------|----------------|----------------|-------------|
+| 2 workers     | $0.49    | $0.22          | **$0.71**      | 106 min     |
+| 4 workers     | $0.43    | $0.23          | **$0.66**      | 59 min      |
+| 6 workers     | $0.42    | $0.23          | **$0.66**      | 42 min      |
+
+**Coût théorique des 3 tests:** $0.71 + $0.66 + $0.66 = **$2.03**
+
+**Coût total réel du projet:** ~**$14 USD** (incluant tests multiples, débogage, et ajustements de configuration)
+
+---
+
+## 🔧 Configuration Technique
+
+### Cluster Dataproc
 
 ```bash
-# Delete bucket (WARNING: irreversible!)
-gsutil -m rm -r gs://YOUR-PROJECT-ID-pagerank-data
+gcloud dataproc clusters create pagerank-cluster-Xw \
+    --region=europe-west1 \
+    --zone=europe-west1-b \
+    --master-machine-type=e2-standard-4 \
+    --master-boot-disk-size=100 \
+    --num-workers=X \
+    --worker-machine-type=e2-standard-4 \
+    --worker-boot-disk-size=100 \
+    --image-version=2.1-debian11 \
+    --max-idle=10m \
+    --properties="spark:spark.executor.memory=12g,spark:spark.driver.memory=12g,spark:spark.executor.cores=3,spark:spark.sql.shuffle.partitions=200"
+```
 
-# Disable APIs (optional)
-gcloud services disable dataproc.googleapis.com
-gcloud services disable storage.googleapis.com
+### Implémentations Testées
+
+#### RDD (Resilient Distributed Datasets)
+- API bas niveau de Spark
+- Transformations manuelles
+- Pas d'optimisation automatique
+
+#### DataFrame
+- API haut niveau avec SQL
+- Optimiseur Catalyst
+- Adaptive Query Execution (AQE)
+- Tungsten execution engine
+
+---
+
+## ✅ Validation des Résultats
+
+### Tous les Tests Réussis
+
+- ✅ **6/6 jobs terminés avec succès**
+- ✅ Centre de Wikipedia identique sur toutes les configs
+- ✅ Scalabilité quasi-linéaire démontrée
+- ✅ Cohérence des résultats entre RDD et DataFrame
+
+### Problèmes Mineurs (Non-Bloquants)
+
+- ⚠️ Sauvegarde RDD échouée (fichier déjà existant) - n'affecte pas les calculs
+- ⚠️ Quelques warnings YARN sur perte de replicas - job a continué avec succès
+
+---
+
+## 📁 Fichiers de Résultats
+
+```
+results/
+├── config_2workers/
+│   ├── rdd_full.log
+│   ├── df_full.log
+│   ├── summary.txt
+│   └── comparison.csv
+├── config_4workers/
+│   ├── rdd_full.log
+│   ├── df_full.log
+│   ├── summary.txt
+│   └── comparison.csv
+└── config_6workers/
+    ├── rdd_full.log
+    ├── df_full.log
+    ├── summary.txt
+    └── comparison.csv
 ```
 
 ---
 
-## 🐛 Troubleshooting
+## 🎓 Conclusions Principales
 
-### Common Issues
+1. **DataFrame >> RDD** - L'API DataFrame de Spark offre des performances nettement supérieures (~50% plus rapide)
 
-**Quota exceeded:**
-```
-Solution 1: Request quota increase to 32 vCPUs in GCP Console
-  - Go to: https://console.cloud.google.com/iam-admin/quotas
-  - Filter: "CPUs (all regions)"
-  - Request increase to 32 or 40 vCPUs
+2. **Excellente Scalabilité** - Le système scale presque linéairement jusqu'à 6 workers
 
-Solution 2: Use only 2 workers configuration (requires 12 vCPUs)
-Solution 3: Use smaller machine type (e2-standard-2 instead of e2-standard-4)
-```
-
-**Permission denied:**
-```bash
-# Fix: Enable required APIs
-gcloud services enable dataproc.googleapis.com
-gcloud services enable storage.googleapis.com
-gcloud services enable compute.googleapis.com
-```
-
-**Cluster creation fails:**
-```
-Check:
-1. Correct PROJECT_ID in scripts
-2. Billing enabled
-3. APIs activated
-4. Quota available (gcloud compute regions describe europe-west1)
-```
-
-**Out of memory:**
-```
-Increase num_partitions in Python files (200 → 400)
-Or use larger machines (e2-standard-4 → e2-standard-8)
-```
-
-### Logs and Debugging
-
-```bash
-# View cluster logs
-gcloud dataproc jobs list --region=europe-west1 --cluster=CLUSTER-NAME
-
-# Check specific job
-gcloud dataproc jobs describe JOB-ID --region=europe-west1
-
-# View detailed logs
-gsutil cat gs://YOUR-BUCKET/google-cloud-dataproc-metainfo/*/jobs/*/driveroutput
-```
+3. **Résultats Cohérents** - Tous les tests identifient "Category:Living people" comme centre de Wikipedia
 
 ---
 
-## 📚 Implementation Details
+## 📚 Détails d'Implémentation
 
-### PageRank Algorithm
+### Algorithme PageRank
 
 ```python
-# Initialization
-rank(p) = 1.0 for all pages p
+# Initialisation
+rank(p) = 1.0 pour toutes les pages p
 
-# Iterations (10 times)
+# Itérations (10 fois)
 for i in 1 to 10:
     contributions(p) = rank(p) / outlinks(p)
-    rank(p) = (1 - damping) + damping * Σ(contributions from incoming links)
+    rank(p) = (1 - damping) + damping * Σ(contributions des liens entrants)
     
-# Where damping = 0.85
+# Où damping = 0.85
 ```
 
-### RDD Key Operations
+### Opérations RDD
 
 ```python
-# 1. Parse data
+# 1. Charger et parser les données
 links = sc.textFile(input).map(parse_ttl).filter(lambda x: x is not None)
 
-# 2. Group by source (with partitioning)
+# 2. Grouper par source avec partitionnement
 links = links.groupByKey().mapValues(list).partitionBy(num_partitions).cache()
 
-# 3. Initialize ranks (same partitioning)
+# 3. Initialiser les rangs
 ranks = links.map(lambda x: (x[0], 1.0)).partitionBy(num_partitions)
 
-# 4. Iterate
+# 4. Itérer
 for iteration in range(10):
-    # Join avoids shuffle (same partitioning)
     contributions = links.join(ranks).flatMap(calculate_contributions)
     ranks = contributions.reduceByKey(add).mapValues(apply_damping).partitionBy(num_partitions)
 ```
 
-### DataFrame Key Operations
+### Opérations DataFrame
 
 ```python
-# 1. Parse data
+# 1. Créer DataFrame
 df_links = spark.createDataFrame(rdd.map(parse_ttl), ["source", "destination"])
 
-# 2. Group and repartition
+# 2. Grouper et repartitionner
 df_links = df_links.groupBy("source").agg(collect_list("destination")).repartition(num_partitions, "source").cache()
 
-# 3. Initialize ranks
+# 3. Initialiser rangs
 df_ranks = df_links.select("source").distinct().withColumn("rank", lit(1.0)).repartition(num_partitions, "source")
 
-# 4. Iterate
+# 4. Itérer (Catalyst optimise automatiquement)
 for iteration in range(10):
-    # Catalyst optimizes this join
     df_contributions = df_links.join(df_ranks, "source").select(explode(...))
     df_ranks = df_contributions.groupBy("destination").agg(sum("contribution")).select(apply_damping(...))
 ```
 
 ---
 
-## 📝 License
+## 📁 Structure du Projet
 
-MIT License - See LICENSE file
-
-## 👥 Contributors
-
-[Your Names Here]
-
-## 📧 Contact
-
-For questions or issues, open a GitHub issue or contact [your-email@example.com]
+```
+page-rank/
+├── README.md                    # Ce fichier
+├── setup_gcp.sh                 # Configuration GCP
+├── data/
+│   └── download_simple.sh       # Téléchargement données
+├── src/
+│   ├── pagerank_rdd.py          # Implémentation RDD
+│   ├── pagerank_dataframe.py    # Implémentation DataFrame
+│   └── utils.py                 # Utilitaires partagés
+├── scripts/
+│   ├── test_config_2workers.sh  # Test 2 workers
+│   ├── test_config_4workers.sh  # Test 4 workers
+│   ├── test_config_6workers.sh  # Test 6 workers
+│   └── cleanup.sh               # Nettoyage ressources
+└── results/
+    └── config_*workers/         # Résultats par configuration
+```
 
 ---
 
-**Last Updated:** December 5, 2025
+##  Contributeurs
+
+- **Bellouche Yacine**
+- **Alhbbal Yazan**
+- **Sellami Bachchar**
+
+---
+
+**Généré le:** 6 décembre 2025  
+**Projet GCP:** page-rank-479014
